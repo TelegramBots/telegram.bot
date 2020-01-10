@@ -7,8 +7,9 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Telegram.Bot.Args;
 using Telegram.Bot.Exceptions;
+using Telegram.Bot.Helpers;
+using Telegram.Bot.Json;
 using Telegram.Bot.Requests;
 using Telegram.Bot.Requests.Abstractions;
 using Telegram.Bot.Types;
@@ -29,139 +30,24 @@ namespace Telegram.Bot
         /// <inheritdoc/>
         public int BotId { get; }
 
-        private static readonly Update[] EmptyUpdates = { };
-
-        private const string BaseUrl = "https://api.telegram.org/bot";
-
-        private const string BaseFileUrl = "https://api.telegram.org/file/bot";
-
         private readonly string _baseRequestUrl;
-
-        private readonly string _token;
+        private readonly string _baseFileRequestUrl;
 
         private readonly HttpClient _httpClient;
-
-        #region Config Properties
-
-        /// <summary>
-        /// Timeout for requests
-        /// </summary>
-        public TimeSpan Timeout
-        {
-            get => _httpClient.Timeout;
-            set => _httpClient.Timeout = value;
-        }
-
-        /// <summary>
-        /// Indicates if receiving updates
-        /// </summary>
-        public bool IsReceiving { get; set; }
-
-        private CancellationTokenSource _receivingCancellationTokenSource;
-
-        /// <summary>
-        /// The current message offset
-        /// </summary>
-        public int MessageOffset { get; set; }
-
-        #endregion Config Properties
-
-        #region Events
-
-        /// <summary>
-        /// Occurs before sending a request to API
-        /// </summary>
-        public event EventHandler<ApiRequestEventArgs> MakingApiRequest;
-
-        /// <summary>
-        /// Occurs after receiving the response to an API request
-        /// </summary>
-        public event EventHandler<ApiResponseEventArgs> ApiResponseReceived;
-
-        /// <summary>
-        /// Raises the <see cref="OnUpdate" />, <see cref="OnMessage"/>, <see cref="OnInlineQuery"/>, <see cref="OnInlineResultChosen"/> and <see cref="OnCallbackQuery"/> events.
-        /// </summary>
-        /// <param name="e">The <see cref="UpdateEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnUpdateReceived(UpdateEventArgs e)
-        {
-            OnUpdate?.Invoke(this, e);
-
-            switch (e.Update.Type)
-            {
-                case UpdateType.Message:
-                    OnMessage?.Invoke(this, e);
-                    break;
-
-                case UpdateType.InlineQuery:
-                    OnInlineQuery?.Invoke(this, e);
-                    break;
-
-                case UpdateType.ChosenInlineResult:
-                    OnInlineResultChosen?.Invoke(this, e);
-                    break;
-
-                case UpdateType.CallbackQuery:
-                    OnCallbackQuery?.Invoke(this, e);
-                    break;
-
-                case UpdateType.EditedMessage:
-                    OnMessageEdited?.Invoke(this, e);
-                    break;
-            }
-        }
-
-        /// <summary>
-        /// Occurs when an <see cref="Update"/> is received.
-        /// </summary>
-        public event EventHandler<UpdateEventArgs> OnUpdate;
-
-        /// <summary>
-        /// Occurs when a <see cref="Message"/> is received.
-        /// </summary>
-        public event EventHandler<MessageEventArgs> OnMessage;
-
-        /// <summary>
-        /// Occurs when <see cref="Message"/> was edited.
-        /// </summary>
-        public event EventHandler<MessageEventArgs> OnMessageEdited;
-
-        /// <summary>
-        /// Occurs when an <see cref="InlineQuery"/> is received.
-        /// </summary>
-        public event EventHandler<InlineQueryEventArgs> OnInlineQuery;
-
-        /// <summary>
-        /// Occurs when a <see cref="ChosenInlineResult"/> is received.
-        /// </summary>
-        public event EventHandler<ChosenInlineResultEventArgs> OnInlineResultChosen;
-
-        /// <summary>
-        /// Occurs when an <see cref="CallbackQuery"/> is received
-        /// </summary>
-        public event EventHandler<CallbackQueryEventArgs> OnCallbackQuery;
-
-        /// <summary>
-        /// Occurs when an error occurs during the background update pooling.
-        /// </summary>
-        public event EventHandler<ReceiveErrorEventArgs> OnReceiveError;
-
-        /// <summary>
-        /// Occurs when an error occurs during the background update pooling.
-        /// </summary>
-        public event EventHandler<ReceiveGeneralErrorEventArgs> OnReceiveGeneralError;
-
-        #endregion
 
         /// <summary>
         /// Create a new <see cref="TelegramBotClient"/> instance.
         /// </summary>
         /// <param name="token">API token</param>
-        /// <param name="httpClient">A custom <see cref="HttpClient"/></param>
+        /// <param name="httpClient">Http client that is used to send the request to Telegram Bot API</param>
+        /// <param name="jsonConverter">Json converter. Defaults to NewtonsoftTelegramBotJsonConverter</param>
         /// <exception cref="ArgumentException">Thrown if <paramref name="token"/> format is invalid</exception>
-        public TelegramBotClient(string token, HttpClient httpClient = null)
+        public TelegramBotClient(string token, HttpClient httpClient = null,
+                                 ITelegramBotJsonConverter jsonConverter = null)
         {
-            _token = token ?? throw new ArgumentNullException(nameof(token));
-            string[] parts = _token.Split(':');
+            _ = token ?? throw new ArgumentNullException(nameof(token));
+
+            string[] parts = token.Split(new[] {':'}, 1);
             if (parts.Length > 1 && int.TryParse(parts[0], out int id))
             {
                 BotId = id;
@@ -174,39 +60,12 @@ namespace Telegram.Bot
                 );
             }
 
-            _baseRequestUrl = $"{BaseUrl}{_token}/";
             _httpClient = httpClient ?? new HttpClient();
-        }
+            _baseRequestUrl = $"{Defaults.BaseUrl}{token}/";
+            _baseFileRequestUrl = $"{Defaults.BaseFileUrl}{token}/";
 
-        /// <summary>
-        /// Create a new <see cref="TelegramBotClient"/> instance behind a proxy.
-        /// </summary>
-        /// <param name="token">API token</param>
-        /// <param name="webProxy">Use this <see cref="IWebProxy"/> to connect to the API</param>
-        /// <exception cref="ArgumentException">Thrown if <paramref name="token"/> format is invalid</exception>
-        public TelegramBotClient(string token, IWebProxy webProxy)
-        {
-            _token = token ?? throw new ArgumentNullException(nameof(token));
-            string[] parts = _token.Split(':');
-            if (int.TryParse(parts[0], out int id))
-            {
-                BotId = id;
-            }
-            else
-            {
-                throw new ArgumentException(
-                    "Invalid format. A valid token looks like \"1234567:4TT8bAc8GHUspu3ERYn-KGcvsvGB9u_n4ddy\".",
-                    nameof(token)
-                );
-            }
-
-            _baseRequestUrl = $"{BaseUrl}{_token}/";
-            var httpClientHander = new HttpClientHandler
-            {
-                Proxy = webProxy,
-                UseProxy = true
-            };
-            _httpClient = new HttpClient(httpClientHander);
+            if (jsonConverter != null)
+                JsonConverter = jsonConverter;
         }
 
         #region Helpers
@@ -220,15 +79,8 @@ namespace Telegram.Bot
 
             var httpRequest = new HttpRequestMessage(request.Method, url)
             {
-                Content = request.ToHttpContent()
+                Content = await request.ToHttpContentAsync(JsonConverter, cancellationToken)
             };
-
-            var reqDataArgs = new ApiRequestEventArgs
-            {
-                MethodName = request.MethodName,
-                HttpContent = httpRequest.Content,
-            };
-            MakingApiRequest?.Invoke(this, reqDataArgs);
 
             HttpResponseMessage httpResponse;
             try
@@ -248,12 +100,6 @@ namespace Telegram.Bot
             var actualResponseStatusCode = httpResponse.StatusCode;
             string responseJson = await httpResponse.Content.ReadAsStringAsync()
                 .ConfigureAwait(false);
-
-            ApiResponseReceived?.Invoke(this, new ApiResponseEventArgs
-            {
-                ResponseMessage = httpResponse,
-                ApiRequestEventArgs = reqDataArgs
-            });
 
             switch (actualResponseStatusCode)
             {
@@ -302,89 +148,8 @@ namespace Telegram.Bot
             }
         }
 
-        /// <summary>
-        /// Start update receiving
-        /// </summary>
-        /// <param name="allowedUpdates">List the types of updates you want your bot to receive.</param>
-        /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
-        /// <exception cref="ApiRequestException"> Thrown if token is invalid</exception>
-        public void StartReceiving(UpdateType[] allowedUpdates = null,
-                                   CancellationToken cancellationToken = default)
-        {
-            _receivingCancellationTokenSource = new CancellationTokenSource();
-
-            cancellationToken.Register(() => _receivingCancellationTokenSource.Cancel());
-
-            ReceiveAsync(allowedUpdates, _receivingCancellationTokenSource.Token);
-        }
-
-#pragma warning disable AsyncFixer03 // Avoid fire & forget async void methods
-        private async void ReceiveAsync(
-            UpdateType[] allowedUpdates,
-            CancellationToken cancellationToken = default)
-        {
-            IsReceiving = true;
-            while (!cancellationToken.IsCancellationRequested)
-            {
-                var timeout = Convert.ToInt32(Timeout.TotalSeconds);
-                var updates = EmptyUpdates;
-
-                try
-                {
-                    updates = await GetUpdatesAsync(
-                        MessageOffset,
-                        timeout: timeout,
-                        allowedUpdates: allowedUpdates,
-                        cancellationToken: cancellationToken
-                    ).ConfigureAwait(false);
-                }
-                catch (OperationCanceledException)
-                {
-                }
-                catch (ApiRequestException apiException)
-                {
-                    OnReceiveError?.Invoke(this, apiException);
-                }
-                catch (Exception generalException)
-                {
-                    OnReceiveGeneralError?.Invoke(this, generalException);
-                }
-
-                try
-                {
-                    foreach (var update in updates)
-                    {
-                        OnUpdateReceived(new UpdateEventArgs(update));
-                        MessageOffset = update.Id + 1;
-                    }
-                }
-                catch
-                {
-                    IsReceiving = false;
-                    throw;
-                }
-            }
-
-            IsReceiving = false;
-        }
-#pragma warning restore AsyncFixer03 // Avoid fire & forget async void methods
-
-        /// <summary>
-        /// Stop update receiving
-        /// </summary>
-        public void StopReceiving()
-        {
-            try
-            {
-                _receivingCancellationTokenSource.Cancel();
-            }
-            catch (WebException)
-            {
-            }
-            catch (TaskCanceledException)
-            {
-            }
-        }
+        /// <inheritdoc />
+        public ITelegramBotJsonConverter JsonConverter { get; } = new NewtonsoftTelegramBotJsonConverter();
 
         #endregion Helpers
 
@@ -830,7 +595,7 @@ namespace Telegram.Bot
                 throw new ArgumentNullException(nameof(destination));
             }
 
-            var fileUri = new Uri($"{BaseFileUrl}{_token}/{filePath}");
+            var fileUri = new Uri(_baseFileRequestUrl + filePath);
 
             var response = await _httpClient
                 .GetAsync(fileUri, HttpCompletionOption.ResponseHeadersRead, cancellationToken)
