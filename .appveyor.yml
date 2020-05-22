@@ -5,13 +5,27 @@ branches:
     - gh-pages
     - docs
 image: Visual Studio 2017
+environment:
+  SonarToken:
+    secure: BKErYiAo2Ct/t6MlvMtPvPLrsEWziM3aI73D33ZrTXGExxdc1sLsEHCl6MH03GJR
 before_build:
+  - cmd: choco install "sonarscanner-msbuild-net46" -y
+  - ps: |
+      if ($ENV:APPVEYOR_PULL_REQUEST_NUMBER -and $ENV:SonarToken) {
+        SonarScanner.MSBuild.exe begin /k:"TelegramBots_Telegram.Bot" /v:"$ENV:APPVEYOR_BUILD_NUMBER" /o:"telegrambots" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$ENV:SonarToken" /d:sonar.pullrequest.base="$ENV:APPVEYOR_REPO_BRANCH" /d:sonar.pullrequest.branch="$ENV:APPVEYOR_PULL_REQUEST_HEAD_REPO_BRANCH" /d:sonar.pullrequest.key="$ENV:APPVEYOR_PULL_REQUEST_NUMBER"
+      } elseif ($ENV:SonarToken) {
+        SonarScanner.MSBuild.exe begin /k:"TelegramBots_Telegram.Bot" /v:"$ENV:APPVEYOR_BUILD_NUMBER" /o:"telegrambots" /d:sonar.host.url="https://sonarcloud.io" /d:sonar.login="$ENV:SonarToken" /d:sonar.branch.name="$ENV:APPVEYOR_REPO_BRANCH"
+      }
   - nuget restore Telegram.Bot.sln
 build:
   project: Telegram.Bot.sln
   publish_nuget: true
   verbosity: normal
 after_build:
+  - ps: |
+      if ($ENV:SonarToken) {
+        SonarScanner.MSBuild.exe end /d:sonar.login="$ENV:SonarToken"
+      }
   - cmd: cd test/Telegram.Bot.Tests.Unit
   - cmd: dotnet test
 test: off
