@@ -1,6 +1,6 @@
 # .NET Client for Telegram Bot API
 
-[![package](https://img.shields.io/nuget/vpre/Telegram.Bot.svg?label=Telegram.Bot&style=flat-square)](https://www.nuget.org/packages/Telegram.Bot)
+[![Financial Contributors on Open Collective](https://opencollective.com/telegrambots/all/badge.svg?label=financial+contributors&style=flat-square)](https://opencollective.com/telegrambots) [![package](https://img.shields.io/nuget/vpre/Telegram.Bot.svg?label=Telegram.Bot&style=flat-square)](https://www.nuget.org/packages/Telegram.Bot)
 [![documentations](https://img.shields.io/badge/Documentations-Book-orange.svg?style=flat-square)](https://telegrambots.github.io/book)
 [![telegram chat](https://img.shields.io/badge/Support_Chat-Telegram-blue.svg?style=flat-square)](https://t.me/joinchat/B35YY0QbLfd034CFnvCtCA)
 
@@ -63,3 +63,33 @@ use it in your own bot projects.
 [the Quickstart guide]: https://telegrambots.github.io/book/1/quickstart.html
 [Telegram.Bot.Extensions.LoginWidget]: https://github.com/TelegramBots/Telegram.Bot.Extensions.LoginWidget
 [Telegram.Bot.Extensions.Passport]: https://github.com/TelegramBots/Telegram.Bot.Extensions.Passport
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/TelegramBots/Telegram.Bot/graphs/contributors"><img src="https://opencollective.com/telegrambots/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/telegrambots/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/telegrambots"><img src="https://opencollective.com/telegrambots/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/telegrambots/contribute)]
+
+<a href="https://opencollective.com/telegrambots/organization/0/website"><img src="https://opencollective.com/telegrambots/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/telegrambots/organization/1/website"><img src="https://opencollective.com/telegrambots/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/telegrambots/organization/2/website"><img src="https://opencollective.com/telegrambots/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/telegrambots/organization/3/website"><img src="https://opencollective.com/telegrambots/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/telegrambots/organization/4/website"><img src="https://opencollective.com/telegrambots/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/telegrambots/organization/5/website"><img src="https://opencollective.com/telegrambots/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/telegrambots/organization/6/website"><img src="https://opencollective.com/telegrambots/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/telegrambots/organization/7/website"><img src="https://opencollective.com/telegrambots/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/telegrambots/organization/8/website"><img src="https://opencollective.com/telegrambots/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/telegrambots/organization/9/website"><img src="https://opencollective.com/telegrambots/organization/9/avatar.svg"></a>
