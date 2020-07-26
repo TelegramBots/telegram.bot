@@ -19,6 +19,6 @@ namespace Telegram.Bot.Types
         /// Requested profile pictures (in up to 4 sizes each)
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public PhotoSize[][] Photos { get; set; }
+        public PhotoSize[][] Photos { get; set; } = default!;
     }
 }

@@ -17,28 +17,31 @@ namespace Telegram.Bot.Requests
         public string CallbackQueryId { get; }
 
         /// <summary>
-        /// Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters.
+        /// Text of the notification. If not specified, nothing will be shown to the user,
+        /// 0-200 characters.
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Text { get; set; }
+        public string? Text { get; set; }
 
         /// <summary>
-        /// If true, an alert will be shown by the client instead of a notification at the top of the chat screen. Defaults to false.
+        /// If true, an alert will be shown by the client instead of a notification at the top of
+        /// the chat screen. Defaults to false.
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool ShowAlert { get; set; }
+        public bool? ShowAlert { get; set; }
 
         /// <summary>
         /// URL that will be opened by the user's client
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Url { get; set; }
+        public string? Url { get; set; }
 
         /// <summary>
-        /// The maximum amount of time in seconds that the result of the callback query may be cached client-side. Telegram apps will support caching starting in version 3.14. Defaults to 0.
+        /// The maximum amount of time in seconds that the result of the callback query may be
+        /// cached client-side. Telegram apps will support caching starting in version 3.14. Defaults to 0.
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int CacheTime { get; set; }
+        public int? CacheTime { get; set; }
 
         /// <summary>
         /// Initializes a new request with callbackQueryId

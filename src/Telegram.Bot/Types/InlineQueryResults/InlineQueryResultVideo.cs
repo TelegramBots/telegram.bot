@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineQueryResults.Abstractions;
 
 namespace Telegram.Bot.Types.InlineQueryResults
 {
@@ -9,11 +8,7 @@ namespace Telegram.Bot.Types.InlineQueryResults
     /// Represents link to a page containing an embedded video player or a video file.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class InlineQueryResultVideo : InlineQueryResultBase,
-        ICaptionInlineQueryResult,
-        IThumbnailUrlInlineQueryResult,
-        ITitleInlineQueryResult,
-        IInputMessageContentResult
+    public class InlineQueryResultVideo : InlineQueryResultBase
     {
         /// <summary>
         /// A valid URL for the embedded video player or video file
@@ -27,11 +22,15 @@ namespace Telegram.Bot.Types.InlineQueryResults
         [JsonProperty(Required = Required.Always)]
         public string MimeType { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// URL of the static thumbnail for the result.
+        /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string ThumbUrl { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Title of the result
+        /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string Title { get; set; }
 
@@ -39,39 +38,48 @@ namespace Telegram.Bot.Types.InlineQueryResults
         /// Optional. Video width
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int VideoWidth { get; set; }
+        public int? VideoWidth { get; set; }
 
         /// <summary>
         /// Optional. Video height
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int VideoHeight { get; set; }
+        public int? VideoHeight { get; set; }
 
         /// <summary>
         /// Optional. Video duration in seconds
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int VideoDuration { get; set; }
+        public int? VideoDuration { get; set; }
 
         /// <summary>
         /// Optional. Short description of the result
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Caption of the result to be sent, 0-1024 characters.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Caption { get; set; }
+        public string? Caption { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width
+        /// text or inline URLs in the media caption.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public ParseMode ParseMode { get; set; }
+        public ParseMode? ParseMode { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Content of the message to be sent
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InputMessageContentBase InputMessageContent { get; set; }
+        public InputMessageContentBase? InputMessageContent { get; set; }
 
+#pragma warning disable 8618
         private InlineQueryResultVideo()
+#pragma warning restore 8618
             : base(InlineQueryResultType.Video)
         {
         }
@@ -81,7 +89,9 @@ namespace Telegram.Bot.Types.InlineQueryResults
         /// </summary>
         /// <param name="id">Unique identifier of this result</param>
         /// <param name="videoUrl">A valid URL for the embedded video player or video file</param>
-        /// <param name="mimeType">Mime type of the content of video url, i.e. "text/html" or "video/mp4"</param>
+        /// <param name="mimeType">
+        /// Mime type of the content of video url, i.e. "text/html" or "video/mp4"
+        /// </param>
         /// <param name="thumbUrl">Url of the thumbnail for the result</param>
         /// <param name="title">Title of the result</param>
         public InlineQueryResultVideo(
@@ -89,8 +99,7 @@ namespace Telegram.Bot.Types.InlineQueryResults
             string videoUrl,
             string mimeType,
             string thumbUrl,
-            string title
-        )
+            string title)
             : base(InlineQueryResultType.Video, id)
         {
             VideoUrl = videoUrl;

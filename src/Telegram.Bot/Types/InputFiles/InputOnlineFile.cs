@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -18,7 +18,7 @@ namespace Telegram.Bot.Types.InputFiles
         /// HTTP URL for Telegram to get a file from the Internet
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Url { get; protected set; }
+        public string? Url { get; protected set; }
 
         /// <inheritdoc cref="IInputFile.FileType"/>
         public override FileType FileType
@@ -33,20 +33,11 @@ namespace Telegram.Bot.Types.InputFiles
         }
 
         /// <summary>
-        /// Constructs an <see cref="InputOnlineFile"/> from a <see cref="Stream"/>
-        /// </summary>
-        /// <param name="content"><see cref="Stream"/> containing the file</param>
-        public InputOnlineFile(Stream content)
-            : this(content, default)
-        {
-        }
-
-        /// <summary>
         /// Constructs an <see cref="InputOnlineFile"/> from a <see cref="Stream"/> and a file name
         /// </summary>
         /// <param name="content"><see cref="Stream"/> containing the file</param>
         /// <param name="fileName">Name of the file</param>
-        public InputOnlineFile(Stream content, string fileName)
+        public InputOnlineFile(Stream content, string? fileName = default)
         {
             Content = content;
             FileName = fileName;
@@ -58,7 +49,7 @@ namespace Telegram.Bot.Types.InputFiles
         /// <param name="value"><see cref="string"/> containing a url or file id</param>
         public InputOnlineFile(string value)
         {
-            if (Uri.TryCreate(value, UriKind.Absolute, out Uri _))
+            if (Uri.TryCreate(value, UriKind.Absolute, out _))
             {
                 Url = value;
             }
@@ -78,20 +69,32 @@ namespace Telegram.Bot.Types.InputFiles
         }
 
         /// <summary>
-        /// ToDo
+        /// Performs an implicit conversion from <see cref="Stream"/> to
+        /// <see cref="InputOnlineFile"/>
         /// </summary>
-        /// <param name="stream"></param>
-        public static implicit operator InputOnlineFile(Stream stream) =>
-            stream == null
+        /// <param name="stream">
+        /// <see cref="Stream"/> instance to be converted to <see cref="InputOnlineFile"/>
+        /// </param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator InputOnlineFile?(Stream stream) =>
+            stream is null
                 ? default
                 : new InputOnlineFile(stream);
 
         /// <summary>
-        /// ToDo
+        /// Performs an implicit conversion from a FileId or a URL to
+        /// <see cref="InputOnlineFile"/>
         /// </summary>
-        /// <param name="value"></param>
-        public static implicit operator InputOnlineFile(string value) =>
-            value == null
+        /// <param name="value">
+        /// FileId of a URL to be converted to <see cref="InputOnlineFile"/>
+        /// </param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator InputOnlineFile?(string value) =>
+            value is null
                 ? default
                 : new InputOnlineFile(value);
     }

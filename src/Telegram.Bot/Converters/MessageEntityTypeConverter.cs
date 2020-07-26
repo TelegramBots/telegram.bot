@@ -14,7 +14,11 @@ namespace Telegram.Bot.Converters
             writer.WriteValue(convertedEntityType);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(
+            JsonReader reader,
+            Type objectType,
+            object existingValue,
+            JsonSerializer serializer)
         {
             string value = JToken.ReadFrom(reader).Value<string>();
             return value.ToMessageType();

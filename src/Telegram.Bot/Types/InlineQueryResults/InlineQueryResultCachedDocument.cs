@@ -1,20 +1,21 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineQueryResults.Abstractions;
 
 namespace Telegram.Bot.Types.InlineQueryResults
 {
     /// <summary>
-    /// Represents a link to a file stored on the Telegram servers. By default, this file will be sent by the user with an optional caption. Alternatively, you can use input_message_content to send a message with the specified content instead of the file. Currently, only pdf-files and zip archives can be sent using this method.
+    /// Represents a link to a file stored on the Telegram servers. By default, this file will be
+    /// sent by the user with an optional caption. Alternatively, you can use
+    /// <see cref="InputMessageContent"/> to send a message with the specified content instead
+    /// of the file. Currently, only pdf-files and zip archives can be sent using this method.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class InlineQueryResultCachedDocument : InlineQueryResultBase,
-        ICaptionInlineQueryResult,
-        ITitleInlineQueryResult,
-        IInputMessageContentResult
+    public class InlineQueryResultCachedDocument : InlineQueryResultBase
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Title of the result
+        /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string Title { get; set; }
 
@@ -28,21 +29,30 @@ namespace Telegram.Bot.Types.InlineQueryResults
         /// Optional. Short description of the result
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Caption of the result to be sent, 0-1024 characters.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Caption { get; set; }
+        public string? Caption { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width
+        /// text or inline URLs in the media caption.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public ParseMode ParseMode { get; set; }
+        public ParseMode? ParseMode { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Content of the message to be sent
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InputMessageContentBase InputMessageContent { get; set; }
+        public InputMessageContentBase? InputMessageContent { get; set; }
 
+#pragma warning disable 8618
         private InlineQueryResultCachedDocument()
+#pragma warning restore 8618
             : base(InlineQueryResultType.Document)
         {
         }

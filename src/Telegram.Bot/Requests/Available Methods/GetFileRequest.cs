@@ -6,7 +6,8 @@ using Telegram.Bot.Types;
 namespace Telegram.Bot.Requests
 {
     /// <summary>
-    /// Get basic info about a file and prepare it for downloading. For the moment, bots can download files of up to 20MB in size. On success, a <see cref="File"/> object is returned.
+    /// Get basic info about a file and prepare it for downloading. For the moment, bots can
+    /// download files of up to 20MB in size. On success, a <see cref="File"/> object is returned.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
     public class GetFileRequest : RequestBase<File>

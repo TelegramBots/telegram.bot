@@ -5,7 +5,8 @@ using Newtonsoft.Json.Serialization;
 namespace Telegram.Bot.Requests
 {
     /// <summary>
-    /// Move a sticker in a set created by the bot to a specific position. Returns True on success.
+    /// Move a sticker in a set created by the bot to a specific position. Returns <c>true</c>
+    /// on success.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
     public class SetStickerPositionInSetRequest : RequestBase<bool>

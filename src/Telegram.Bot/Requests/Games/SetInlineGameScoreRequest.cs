@@ -6,11 +6,12 @@ using Telegram.Bot.Requests.Abstractions;
 namespace Telegram.Bot.Requests
 {
     /// <summary>
-    /// Set the score of the specified user in a game. On success returns True. Returns an error, if the new score is not greater than the user's current score in the chat and force is False.
+    /// Set the score of the specified user in a game. On success returns <c>true</c>.
+    /// Returns an error, if the new score is not greater than the user's current score in the
+    /// chat and force is <c>false</c>.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class SetInlineGameScoreRequest : RequestBase<bool>,
-                                             IInlineMessage
+    public class SetInlineGameScoreRequest : RequestBase<bool>, IUserTargetable
     {
         /// <summary>
         /// User identifier
@@ -24,21 +25,25 @@ namespace Telegram.Bot.Requests
         [JsonProperty(Required = Required.Always)]
         public int Score { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Identifier of the inline message
+        /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string InlineMessageId { get; }
 
         /// <summary>
-        /// Pass True, if the high score is allowed to decrease. This can be useful when fixing mistakes or banning cheaters.
+        /// Pass <c>true</c>, if the high score is allowed to decrease. This can be useful when
+        /// fixing mistakes or banning cheaters.
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool Force { get; set; }
+        public bool? Force { get; set; }
 
         /// <summary>
-        /// Pass True, if the game message should not be automatically edited to include the current scoreboard
+        /// Pass <c>true</c>, if the game message should not be automatically edited to include
+        /// the current scoreboard
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool DisableEditMessage { get; set; }
+        public bool? DisableEditMessage { get; set; }
 
         /// <summary>
         /// Initializes a new request with userId, inlineMessageId and new score

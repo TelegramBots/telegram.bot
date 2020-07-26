@@ -24,26 +24,27 @@ namespace Telegram.Bot.Requests
         /// Public key certificate so that the root certificate in use can be checked
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InputFileStream Certificate { get; }
+        public InputFileStream? Certificate { get; }
 
         /// <summary>
-        /// Maximum allowed number of simultaneous HTTPS connections to the webhook for update delivery
+        /// Maximum allowed number of simultaneous HTTPS connections to the webhook for update
+        /// delivery
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int MaxConnections { get; set; }
+        public int? MaxConnections { get; set; }
 
         /// <summary>
         /// List the types of updates you want your bot to receive
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public IEnumerable<UpdateType> AllowedUpdates { get; set; }
+        public IEnumerable<UpdateType>? AllowedUpdates { get; set; }
 
         /// <summary>
         /// Initializes a new request with uri
         /// </summary>
         /// <param name="url">HTTPS url to send updates to</param>
-        /// <param name="certificate">ToDo</param>
-        public SetWebhookRequest(string url, InputFileStream certificate)
+        /// <param name="certificate">Certificate created for <paramref name="url"/></param>
+        public SetWebhookRequest(string url, InputFileStream? certificate)
             : base("setWebhook")
         {
             Url = url;
@@ -51,7 +52,7 @@ namespace Telegram.Bot.Requests
         }
 
         /// <inheritdoc cref="RequestBase{TResponse}.ToHttpContent"/>
-        public override HttpContent ToHttpContent() =>
+        public override HttpContent? ToHttpContent() =>
             Certificate == null
                 ? base.ToHttpContent()
                 : ToMultipartFormDataContent("certificate", Certificate);

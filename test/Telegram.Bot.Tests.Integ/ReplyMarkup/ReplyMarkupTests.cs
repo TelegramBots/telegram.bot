@@ -35,10 +35,11 @@ namespace Telegram.Bot.Tests.Integ.ReplyMarkup
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.SendMessage)]
         public async Task Should_Send_MultiRow_Keyboard()
         {
-            ReplyKeyboardMarkup replyMarkup = new[] {
-                new[] {    "Top-Left",   "Top" , "Top-Right"    },
-                new[] {        "Left", "Center", "Right"        },
-                new[] { "Bottom-Left", "Bottom", "Bottom-Right" },
+            ReplyKeyboardMarkup replyMarkup = new []
+            {
+                new [] {    "Top-Left",   "Top" , "Top-Right"    },
+                new [] {        "Left", "Center", "Right"        },
+                new [] { "Bottom-Left", "Bottom", "Bottom-Right" },
             };
 
             await BotClient.SendTextMessageAsync(
@@ -66,22 +67,30 @@ namespace Telegram.Bot.Tests.Integ.ReplyMarkup
             Message sentMessage = await BotClient.SendTextMessageAsync(
                 chatId: _fixture.SupergroupChat,
                 text: "Message with inline keyboard markup",
-                replyMarkup: new InlineKeyboardMarkup(new[]
+                replyMarkup: new InlineKeyboardMarkup(new []
                 {
                     new []
                     {
                         InlineKeyboardButton.WithUrl(
-                            "Link to Repository",
-                            "https://github.com/TelegramBots/Telegram.Bot"
+                            text: "Link to Repository",
+                            url: "https://github.com/TelegramBots/Telegram.Bot"
                         ),
                     },
                     new []
                     {
-                        InlineKeyboardButton.WithCallbackData("callback_data1"),
-                        InlineKeyboardButton.WithCallbackData("callback_data2", "data"),
+                        InlineKeyboardButton.WithCallbackData(textAndCallbackData: "callback_data1"),
+                        InlineKeyboardButton.WithCallbackData(text: "callback_data2", callbackData: "data"),
                     },
-                    new [] { InlineKeyboardButton.WithSwitchInlineQuery("switch_inline_query"), },
-                    new [] { InlineKeyboardButton.WithSwitchInlineQueryCurrentChat("switch_inline_query_current_chat"), },
+                    new []
+                    {
+                        InlineKeyboardButton.WithSwitchInlineQuery(text: "switch_inline_query"),
+                    },
+                    new []
+                    {
+                        InlineKeyboardButton.WithSwitchInlineQueryCurrentChat(
+                            text: "switch_inline_query_current_chat"
+                        ),
+                    },
                 })
             );
 
@@ -90,27 +99,32 @@ namespace Telegram.Bot.Tests.Integ.ReplyMarkup
                     JToken.FromObject(sentMessage.ReplyMarkup),
                     JToken.FromObject(
                         new InlineKeyboardMarkup(
-                            new[]
+                            new []
                             {
-                                new[]
+                                new []
                                 {
                                     InlineKeyboardButton.WithUrl(
-                                        "Link to Repository",
-                                        "https://github.com/TelegramBots/Telegram.Bot"
+                                        text: "Link to Repository",
+                                        url: "https://github.com/TelegramBots/Telegram.Bot"
                                     ),
                                 },
-                                new[]
+                                new []
                                 {
-                                    InlineKeyboardButton.WithCallbackData("callback_data1"),
-                                    InlineKeyboardButton.WithCallbackData("callback_data2", "data"),
+                                    InlineKeyboardButton.WithCallbackData(textAndCallbackData: "callback_data1"),
+                                    InlineKeyboardButton.WithCallbackData(
+                                        text: "callback_data2",
+                                        callbackData: "data"
+                                    ),
                                 },
-                                new[]
+                                new []
                                 {
-                                    InlineKeyboardButton.WithSwitchInlineQuery("switch_inline_query"),
+                                    InlineKeyboardButton.WithSwitchInlineQuery(text: "switch_inline_query"),
                                 },
-                                new[]
+                                new []
                                 {
-                                    InlineKeyboardButton.WithSwitchInlineQueryCurrentChat("switch_inline_query_current_chat"),
+                                    InlineKeyboardButton.WithSwitchInlineQueryCurrentChat(
+                                        text: "switch_inline_query_current_chat"
+                                    ),
                                 },
                             }
                         )

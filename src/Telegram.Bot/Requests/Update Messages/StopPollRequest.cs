@@ -12,8 +12,7 @@ namespace Telegram.Bot.Requests
     /// Stop a poll
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class StopPollRequest : RequestBase<Poll>,
-                                   IReplyMarkupMessage<InlineKeyboardMarkup>
+    public class StopPollRequest : RequestBase<Poll>, IChatTargetable
     {
         /// <summary>
         /// Unique identifier for the target chat or username of the target channel
@@ -27,14 +26,18 @@ namespace Telegram.Bot.Requests
         [JsonProperty(Required = Required.Always)]
         public int MessageId { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// A JSON-serialized object for an inline keyboard
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InlineKeyboardMarkup ReplyMarkup { get; set; }
+        public InlineKeyboardMarkup? ReplyMarkup { get; set; }
 
         /// <summary>
         /// Initializes a new request with chatId, messageId and new text
         /// </summary>
-        /// <param name="chatId">Unique identifier for the target chat or username of the target channel</param>
+        /// <param name="chatId">
+        /// Unique identifier for the target chat or username of the target channel
+        /// </param>
         /// <param name="messageId">Identifier of the sent message</param>
         public StopPollRequest(ChatId chatId, int messageId)
             : base("stopPoll")

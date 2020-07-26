@@ -24,7 +24,7 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
             _fixture = fixture;
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldEditInlineMessageText)]
+        [OrderedFact("Should edit an inline message's text")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.AnswerInlineQuery)]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.EditMessageText)]
         public async Task Should_Edit_Inline_Message_Text()
@@ -38,23 +38,23 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
 
             Update inlineQUpdate = await _fixture.UpdateReceiver.GetInlineQueryUpdateAsync();
 
-            const string originalMessagePrefix = "original\n";
             (MessageEntityType Type, string Value)[] entityValueMappings =
             {
                 (MessageEntityType.Bold, "<b>bold</b>"),
                 (MessageEntityType.Italic, "<i>italic</i>"),
             };
+            string originalMessagePrefix = "original\n";
             string messageText = originalMessagePrefix +
                                  string.Join("\n", entityValueMappings.Select(tuple => tuple.Value));
-            string data = "change-text" + new Random().Next(2_000);
+
+            string data = $"change-text{new Random().Next(2_000)}";
 
             InlineQueryResultBase[] inlineQueryResults =
             {
                 new InlineQueryResultArticle(
                     id: "bot-api",
                     title: "Telegram Bot API",
-                    inputMessageContent:
-                    new InputTextMessageContent(messageText)
+                    inputMessageContent: new InputTextMessageContent(messageText: messageText)
                     {
                         ParseMode = ParseMode.Html
                     }
@@ -64,25 +64,25 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
                 }
             };
 
-            await BotClient.AnswerInlineQueryAsync(inlineQUpdate.InlineQuery.Id, inlineQueryResults, 0);
+            await BotClient.AnswerInlineQueryAsync(inlineQUpdate.InlineQuery!.Id, inlineQueryResults, 0);
 
             #endregion
 
             Update callbackQUpdate = await _fixture.UpdateReceiver
                 .GetCallbackQueryUpdateAsync(data: data);
 
-            const string modifiedMessagePrefix = "✌ modified 👌\n";
+            string modifiedMessagePrefix = "✌ modified 👌\n";
             messageText = modifiedMessagePrefix +
                           string.Join("\n", entityValueMappings.Select(tuple => tuple.Value));
 
             await BotClient.EditMessageTextAsync(
-                inlineMessageId: callbackQUpdate.CallbackQuery.InlineMessageId,
+                inlineMessageId: callbackQUpdate.CallbackQuery!.InlineMessageId!,
                 text: messageText,
                 parseMode: ParseMode.Html
             );
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldEditInlineMessageMarkup)]
+        [OrderedFact("Should edit an inline message's markup")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.AnswerInlineQuery)]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.EditMessageReplyMarkup)]
         public async Task Should_Edit_Inline_Message_Markup()
@@ -96,14 +96,19 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
 
             Update inlineQUpdate = await _fixture.UpdateReceiver.GetInlineQueryUpdateAsync();
 
-            string data = "change-me" + new Random().Next(2_000);
-            InlineKeyboardMarkup initialMarkup = new InlineKeyboardMarkup(new[]
+            string data = $"change-me{new Random().Next(2_000)}";
+
+            InlineKeyboardMarkup initialMarkup = new InlineKeyboardMarkup(new []
             {
-                InlineKeyboardButton.WithCallbackData("Click here to change this button", data)
+                InlineKeyboardButton.WithCallbackData(
+                    text: "Click here to change this button",
+                    callbackData: data
+                )
             });
 
-            InputMessageContentBase inputMessageContent =
-                new InputTextMessageContent("https://core.telegram.org/bots/api");
+            InputMessageContentBase inputMessageContent = new InputTextMessageContent(
+                "https://core.telegram.org/bots/api"
+            );
 
             InlineQueryResultBase[] inlineQueryResults =
             {
@@ -117,7 +122,11 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
                 },
             };
 
-            await BotClient.AnswerInlineQueryAsync(inlineQUpdate.InlineQuery.Id, inlineQueryResults, 0);
+            await BotClient.AnswerInlineQueryAsync(
+                inlineQueryId: inlineQUpdate.InlineQuery!.Id,
+                results: inlineQueryResults,
+                cacheTime: 0
+            );
 
             #endregion
 
@@ -125,12 +134,12 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
                 .GetCallbackQueryUpdateAsync(data: data);
 
             await BotClient.EditMessageReplyMarkupAsync(
-                inlineMessageId: callbackQUpdate.CallbackQuery.InlineMessageId,
+                inlineMessageId: callbackQUpdate.CallbackQuery!.InlineMessageId!,
                 replyMarkup: "✌ Edited 👌"
             );
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldEditInlineMessageCaption)]
+        [OrderedFact("Should edit an inline message's caption")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.AnswerInlineQuery)]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.EditMessageCaption)]
         public async Task Should_Edit_Inline_Message_Caption()
@@ -144,27 +153,33 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
 
             Update inlineQUpdate = await _fixture.UpdateReceiver.GetInlineQueryUpdateAsync();
 
-            string data = "change-me" + new Random().Next(2_000);
-            InlineKeyboardMarkup replyMarkup = new InlineKeyboardMarkup(new[]
+            string data = $"change-me{new Random().Next(2_000)}";
+
+            InlineKeyboardMarkup replyMarkup = new InlineKeyboardMarkup(new []
             {
-                InlineKeyboardButton.WithCallbackData("Click here to change caption", data)
+                InlineKeyboardButton.WithCallbackData(
+                    text: "Click here to change caption",
+                    callbackData: data
+                )
             });
-            const string url = "https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2696947_640.jpg";
+            string url = "https://cdn.pixabay.com/photo/2017/08/30/12/45/girl-2696947_640.jpg";
 
             InlineQueryResultBase[] inlineQueryResults =
             {
                 new InlineQueryResultPhoto(
                     id: "photo1",
                     photoUrl: url,
-                    thumbUrl: url
-                )
+                    thumbUrl: url)
                 {
                     Caption = "Message caption will be updated shortly",
                     ReplyMarkup = replyMarkup
                 }
             };
 
-            await BotClient.AnswerInlineQueryAsync(inlineQUpdate.InlineQuery.Id, inlineQueryResults, 0);
+            await BotClient.AnswerInlineQueryAsync(
+                inlineQueryId: inlineQUpdate.InlineQuery!.Id,
+                results: inlineQueryResults, cacheTime: 0
+            );
 
             #endregion
 
@@ -172,19 +187,10 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
                 .GetCallbackQueryUpdateAsync(data: data);
 
             await BotClient.EditMessageCaptionAsync(
-                inlineMessageId: callbackQUpdate.CallbackQuery.InlineMessageId,
+                inlineMessageId: callbackQUpdate.CallbackQuery!.InlineMessageId!,
                 caption: "_Caption is edited_ 👌",
                 parseMode: ParseMode.Markdown
             );
-        }
-
-        private static class FactTitles
-        {
-            public const string ShouldEditInlineMessageText = "Should edit an inline message's text";
-
-            public const string ShouldEditInlineMessageMarkup = "Should edit an inline message's markup";
-
-            public const string ShouldEditInlineMessageCaption = "Should edit an inline message's caption";
         }
     }
 }

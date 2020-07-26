@@ -4,19 +4,31 @@ namespace Telegram.Bot.Tests.Integ.Framework
 {
     public static class Constants
     {
-        public const string CategoryTraitName = "Category";
-
-        public const string InteractiveCategoryValue = "Interactive";
-
-        public const string MethodTraitName = "Method";
-
         public const string AssemblyName = "Telegram.Bot.Tests.Integ";
 
+        private const string CommonPrefix = AssemblyName + "." + nameof(Framework);
+
         public const string TestCaseOrderer =
-            AssemblyName + "." + nameof(Framework) + "." + nameof(Framework.TestCaseOrderer);
+            CommonPrefix + "." +
+            nameof(Framework.TestCaseOrderer);
 
         public const string TestCaseDiscoverer =
-            AssemblyName + "." + nameof(Framework) + "." + nameof(XunitExtensions) + "." + nameof(RetryFactDiscoverer);
+            CommonPrefix + "." +
+            nameof(XunitExtensions) + "." +
+            nameof(RetryFactDiscoverer);
+
+        public const string TestCollectionOrderer =
+            CommonPrefix + "." +
+            nameof(Framework.TestCollectionOrderer);
+
+        public const string TestFramework =
+            CommonPrefix + "." +
+            nameof(XunitExtensions) + "." +
+            nameof(XunitTestFrameworkWithAssemblyFixture);
+
+        public const string CategoryTraitName = "Category";
+        public const string InteractiveCategoryValue = "Interactive";
+        public const string MethodTraitName = "Method";
 
         public static class TestCollections
         {
@@ -63,8 +75,6 @@ namespace Telegram.Bot.Tests.Integ.Framework
             public const string CallbackQuery = "Callback Query";
 
             public const string AlbumMessage = "Sending Album Messages";
-
-            public const string ObsoleteSendMediaGroup = "Refactor SendMediaGroup method";
 
             public const string EditMessage = "Edit message content";
 

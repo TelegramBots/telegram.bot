@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Telegram.Bot.Requests.Abstractions;
 using Telegram.Bot.Types.ReplyMarkups;
 
 // ReSharper disable once CheckNamespace
@@ -10,11 +9,11 @@ namespace Telegram.Bot.Requests
     /// Edit live location messages sent via the bot (for inline bots)
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class EditInlineMessageLiveLocationRequest : RequestBase<bool>,
-                                                        IInlineMessage,
-                                                        IInlineReplyMarkupMessage
+    public class EditInlineMessageLiveLocationRequest : RequestBase<bool>
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Identifier of the inline message
+        /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string InlineMessageId { get; }
 
@@ -22,17 +21,19 @@ namespace Telegram.Bot.Requests
         /// Latitude of new location
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public float Latitude { get; }
+        public double Latitude { get; }
 
         /// <summary>
         /// Longitude of new location
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public float Longitude { get; }
+        public double Longitude { get; }
 
-        /// <inheritdoc cref="IInlineReplyMarkupMessage.ReplyMarkup" />
+        /// <summary>
+        /// A JSON-serialized object for an inline keyboard
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InlineKeyboardMarkup ReplyMarkup { get; set; }
+        public InlineKeyboardMarkup? ReplyMarkup { get; set; }
 
         /// <summary>
         /// Initializes a new request with inline message id and new location
@@ -40,7 +41,10 @@ namespace Telegram.Bot.Requests
         /// <param name="inlineMessageId">Identifier of the inline message</param>
         /// <param name="latitude">Latitude of new location</param>
         /// <param name="longitude">Longitude of new location</param>
-        public EditInlineMessageLiveLocationRequest(string inlineMessageId, float latitude, float longitude)
+        public EditInlineMessageLiveLocationRequest(
+            string inlineMessageId,
+            double latitude,
+            double longitude)
             : base("editMessageLiveLocation")
         {
             InlineMessageId = inlineMessageId;

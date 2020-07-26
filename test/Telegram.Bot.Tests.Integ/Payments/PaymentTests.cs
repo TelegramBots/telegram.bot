@@ -40,12 +40,12 @@ namespace Telegram.Bot.Tests.Integ.Payments
             );
 
             _classFixture.Payload = "my-payload";
-            const string url = "https://cdn.pixabay.com/photo/2017/09/07/08/54/money-2724241_640.jpg";
+            string url = "https://cdn.pixabay.com/photo/2017/09/07/08/54/money-2724241_640.jpg";
 
             LabeledPrice[] productPrices =
             {
-                new LabeledPrice("PART_OF_PRODUCT_PRICE_1", 150),
-                new LabeledPrice("PART_OF_PRODUCT_PRICE_2", 2029),
+                new LabeledPrice(label: "PART_OF_PRODUCT_PRICE_1", amount: 150),
+                new LabeledPrice(label: "PART_OF_PRODUCT_PRICE_2", amount: 2029),
             };
 
             Invoice invoice = new Invoice
@@ -79,7 +79,7 @@ namespace Telegram.Bot.Tests.Integ.Payments
             );
 
             Assert.Equal(MessageType.Invoice, message.Type);
-            Assert.Equal(invoice.Title, message.Invoice.Title);
+            Assert.Equal(invoice.Title, message.Invoice!.Title);
             Assert.Equal(invoice.Currency, message.Invoice.Currency);
             Assert.Equal(invoice.TotalAmount, message.Invoice.TotalAmount);
             Assert.Equal(invoice.Description, message.Invoice.Description);
@@ -94,8 +94,8 @@ namespace Telegram.Bot.Tests.Integ.Payments
         {
             LabeledPrice[] shippingPrices =
             {
-                new LabeledPrice("PART_OF_SHIPPING_TOTAL_PRICE_1", 500),
-                new LabeledPrice("PART_OF_SHIPPING_TOTAL_PRICE_2", 299),
+                new LabeledPrice(label: "PART_OF_SHIPPING_TOTAL_PRICE_1", amount: 500),
+                new LabeledPrice(label: "PART_OF_SHIPPING_TOTAL_PRICE_2", amount: 299),
             };
 
             ShippingOption shippingOption = new ShippingOption
@@ -115,7 +115,7 @@ namespace Telegram.Bot.Tests.Integ.Payments
             Update shippingUpdate = await GetShippingQueryUpdate();
 
             await _fixture.BotClient.AnswerShippingQueryAsync(
-                shippingQueryId: shippingUpdate.ShippingQuery.Id,
+                shippingQueryId: shippingUpdate.ShippingQuery!.Id,
                 shippingOptions: shippingOptions
             );
 
@@ -137,7 +137,7 @@ namespace Telegram.Bot.Tests.Integ.Payments
             PreCheckoutQuery query = preCheckoutUpdate.PreCheckoutQuery;
 
             await _fixture.BotClient.AnswerPreCheckoutQueryAsync(
-                preCheckoutQueryId: query.Id
+                preCheckoutQueryId: query!.Id
             );
 
             int totalAmount = _classFixture.Invoice.TotalAmount +
@@ -162,12 +162,12 @@ namespace Telegram.Bot.Tests.Integ.Payments
         public async Task Should_Receive_Successful_Payment_With_Shipment_Option()
         {
             Update successfulPaymentUpdate = await GetSuccessfulPaymentUpdate();
-            SuccessfulPayment successfulPayment = successfulPaymentUpdate.Message.SuccessfulPayment;
+            SuccessfulPayment successfulPayment = successfulPaymentUpdate.Message!.SuccessfulPayment;
 
             int totalAmount = _classFixture.Invoice.TotalAmount +
                               _classFixture.ShippingOption.Prices.Sum(p => p.Amount);
 
-            Assert.Equal(totalAmount, successfulPayment.TotalAmount);
+            Assert.Equal(totalAmount, successfulPayment!.TotalAmount);
             Assert.Equal(_classFixture.Payload, successfulPayment.InvoicePayload);
             Assert.Equal(_classFixture.Invoice.Currency, successfulPayment.Currency);
             Assert.Equal(_classFixture.ShippingOption.Id, successfulPayment.ShippingOptionId);
@@ -183,12 +183,12 @@ namespace Telegram.Bot.Tests.Integ.Payments
                 chatId: _classFixture.PrivateChat.Id
             );
 
-            const string payload = "shipping_query-error-payload";
+            string payload = "shipping_query-error-payload";
 
             LabeledPrice[] productPrices =
             {
-                new LabeledPrice("PART_OF_PRODUCT_PRICE_1", 150),
-                new LabeledPrice("PART_OF_PRODUCT_PRICE_2", 2029),
+                new LabeledPrice(label: "PART_OF_PRODUCT_PRICE_1", amount: 150),
+                new LabeledPrice(label: "PART_OF_PRODUCT_PRICE_2", amount: 2029),
             };
             Invoice invoice = new Invoice
             {
@@ -215,7 +215,7 @@ namespace Telegram.Bot.Tests.Integ.Payments
             Update shippingUpdate = await GetShippingQueryUpdate();
 
             await _fixture.BotClient.AnswerShippingQueryAsync(
-                shippingQueryId: shippingUpdate.ShippingQuery.Id,
+                shippingQueryId: shippingUpdate.ShippingQuery!.Id,
                 errorMessage: "HUMAN_FRIENDLY_DELIVERY_ERROR_MESSAGE"
             );
         }
@@ -230,12 +230,12 @@ namespace Telegram.Bot.Tests.Integ.Payments
                 chatId: _classFixture.PrivateChat.Id
             );
 
-            const string payload = "pre_checkout-error-payload";
+            string payload = "pre_checkout-error-payload";
 
             LabeledPrice[] productPrices =
             {
-                new LabeledPrice("PART_OF_PRODUCT_PRICE_1", 150),
-                new LabeledPrice("PART_OF_PRODUCT_PRICE_2", 2029),
+                new LabeledPrice(label: "PART_OF_PRODUCT_PRICE_1", amount: 150),
+                new LabeledPrice(label: "PART_OF_PRODUCT_PRICE_2", amount: 2029),
             };
             Invoice invoice = new Invoice
             {
@@ -261,7 +261,7 @@ namespace Telegram.Bot.Tests.Integ.Payments
             PreCheckoutQuery query = preCheckoutUpdate.PreCheckoutQuery;
 
             await _fixture.BotClient.AnswerPreCheckoutQueryAsync(
-                preCheckoutQueryId: query.Id,
+                preCheckoutQueryId: query!.Id,
                 errorMessage: "HUMAN_FRIENDLY_ERROR_MESSAGE"
             );
         }
@@ -270,12 +270,12 @@ namespace Telegram.Bot.Tests.Integ.Payments
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.SendInvoice)]
         public async Task Should_Throw_When_Send_Invoice_Invalid_Provider_Data()
         {
-            const string payload = "my-payload";
+            string payload = "my-payload";
 
             LabeledPrice[] prices =
             {
-                new LabeledPrice("PART_OF_PRODUCT_PRICE_1", 150),
-                new LabeledPrice("PART_OF_PRODUCT_PRICE_2", 2029),
+                new LabeledPrice(label: "PART_OF_PRODUCT_PRICE_1", amount: 150),
+                new LabeledPrice(label: "PART_OF_PRODUCT_PRICE_2", amount: 2029),
             };
             Invoice invoice = new Invoice
             {
@@ -286,8 +286,8 @@ namespace Telegram.Bot.Tests.Integ.Payments
                 Description = "PRODUCT_DESCRIPTION",
             };
 
-            ApiRequestException exception = await Assert.ThrowsAnyAsync<ApiRequestException>(() =>
-                BotClient.SendInvoiceAsync(
+            ApiRequestException exception = await Assert.ThrowsAsync<ApiRequestException>(async () =>
+                await BotClient.SendInvoiceAsync(
                     chatId: (int) _classFixture.PrivateChat.Id,
                     title: invoice.Title,
                     description: invoice.Description,
@@ -299,7 +299,6 @@ namespace Telegram.Bot.Tests.Integ.Payments
                     providerData: "INVALID-JSON"
                 ));
 
-            // ToDo: Add exception
             Assert.Equal(400, exception.ErrorCode);
             Assert.Equal("Bad Request: DATA_JSON_INVALID", exception.Message);
         }
@@ -308,12 +307,12 @@ namespace Telegram.Bot.Tests.Integ.Payments
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.SendInvoice)]
         public async Task Should_Throw_When_Answer_Shipping_Query_With_Duplicate_Shipping_Id()
         {
-            const string payload = "my-payload";
+            string payload = "my-payload";
 
             LabeledPrice[] productPrices =
             {
-                new LabeledPrice("PART_OF_PRODUCT_PRICE_1", 150),
-                new LabeledPrice("PART_OF_PRODUCT_PRICE_2", 2029),
+                new LabeledPrice(label: "PART_OF_PRODUCT_PRICE_1", amount: 150),
+                new LabeledPrice(label: "PART_OF_PRODUCT_PRICE_2", amount: 2029),
             };
             Invoice invoice = new Invoice
             {
@@ -338,8 +337,8 @@ namespace Telegram.Bot.Tests.Integ.Payments
 
             LabeledPrice[] shippingPrices =
             {
-                new LabeledPrice("PART_OF_SHIPPING_TOTAL_PRICE_1", 500),
-                new LabeledPrice("PART_OF_SHIPPING_TOTAL_PRICE_2", 299),
+                new LabeledPrice(label: "PART_OF_SHIPPING_TOTAL_PRICE_1", amount: 500),
+                new LabeledPrice(label: "PART_OF_SHIPPING_TOTAL_PRICE_2", amount: 299),
             };
 
             ShippingOption shippingOption = new ShippingOption
@@ -351,19 +350,18 @@ namespace Telegram.Bot.Tests.Integ.Payments
 
             Update shippingUpdate = await GetShippingQueryUpdate();
 
-            ApiRequestException exception = await Assert.ThrowsAnyAsync<ApiRequestException>(() =>
-                _fixture.BotClient.AnswerShippingQueryAsync(
-                    shippingQueryId: shippingUpdate.ShippingQuery.Id,
-                    shippingOptions: new[] {shippingOption, shippingOption}
+            ApiRequestException exception = await Assert.ThrowsAsync<ApiRequestException>(async () =>
+                await _fixture.BotClient.AnswerShippingQueryAsync(
+                    shippingQueryId: shippingUpdate.ShippingQuery!.Id,
+                    shippingOptions: new [] { shippingOption, shippingOption }
                 )
             );
 
-            // ToDo: Add exception
             Assert.Equal(400, exception.ErrorCode);
             Assert.Equal("Bad Request: SHIPPING_ID_DUPLICATE", exception.Message);
 
             await _fixture.BotClient.AnswerShippingQueryAsync(
-                shippingQueryId: shippingUpdate.ShippingQuery.Id,
+                shippingQueryId: shippingUpdate.ShippingQuery!.Id,
                 errorMessage: "✅ Test Passed"
             );
         }
@@ -380,17 +378,23 @@ namespace Telegram.Bot.Tests.Integ.Payments
                 providerToken: _classFixture.PaymentProviderToken,
                 startParameter: "start_parameter",
                 currency: "USD",
-                prices: new[] {new LabeledPrice("price", 150),},
-                replyMarkup: new InlineKeyboardMarkup(new[]
+                prices: new []
                 {
-                    new[]
+                    new LabeledPrice(label: "price", amount: 150),
+                },
+                replyMarkup: new InlineKeyboardMarkup(new []
+                {
+                    new []
                     {
-                        InlineKeyboardButton.WithPayment("Pay this invoice"),
-                        InlineKeyboardButton.WithUrl("Repository", "https://github.com/TelegramBots/Telegram.Bot")
+                        InlineKeyboardButton.WithPayment(text: "Pay this invoice"),
+                        InlineKeyboardButton.WithUrl(
+                            text: "Repository",
+                            url: "https://github.com/TelegramBots/Telegram.Bot"
+                        )
                     },
-                    new[]
+                    new []
                     {
-                        InlineKeyboardButton.WithCallbackData("Some other button")
+                        InlineKeyboardButton.WithCallbackData(textAndCallbackData: "Some other button")
                     }
                 })
             );
@@ -398,40 +402,34 @@ namespace Telegram.Bot.Tests.Integ.Payments
 
         private async Task<Update> GetShippingQueryUpdate(CancellationToken cancellationToken = default)
         {
-            Update[] updates = await _fixture.UpdateReceiver.GetUpdatesAsync(
+            Update update = await _fixture.UpdateReceiver.GetUpdateAsync(
                 cancellationToken: cancellationToken,
-                updateTypes: UpdateType.ShippingQuery);
-
-            Update update = updates.Single();
+                updateTypes: UpdateType.ShippingQuery
+            );
 
             await _fixture.UpdateReceiver.DiscardNewUpdatesAsync(cancellationToken);
 
             return update;
         }
 
-        private async Task<Update> GetPreCheckoutQueryUpdate(
-            CancellationToken cancellationToken = default)
+        private async Task<Update> GetPreCheckoutQueryUpdate(CancellationToken cancellationToken = default)
         {
-            Update[] updates = await _fixture.UpdateReceiver.GetUpdatesAsync(
+            Update update = await _fixture.UpdateReceiver.GetUpdateAsync(
                 cancellationToken: cancellationToken,
-                updateTypes: UpdateType.PreCheckoutQuery);
-
-            Update update = updates.Single();
-
+                updateTypes: UpdateType.PreCheckoutQuery
+            );
             await _fixture.UpdateReceiver.DiscardNewUpdatesAsync(cancellationToken);
 
             return update;
         }
 
-        private async Task<Update> GetSuccessfulPaymentUpdate(
-            CancellationToken cancellationToken = default)
+        private async Task<Update> GetSuccessfulPaymentUpdate(CancellationToken cancellationToken = default)
         {
-            Update[] updates = await _fixture.UpdateReceiver.GetUpdatesAsync(
-                predicate: u => u.Message.Type == MessageType.SuccessfulPayment,
+            Update update = await _fixture.UpdateReceiver.GetUpdateAsync(
+                predicate: u => u.Message!.Type == MessageType.SuccessfulPayment,
                 cancellationToken: cancellationToken,
-                updateTypes: UpdateType.Message);
-
-            Update update = updates.Single();
+                updateTypes: UpdateType.Message
+            );
 
             await _fixture.UpdateReceiver.DiscardNewUpdatesAsync(cancellationToken);
 

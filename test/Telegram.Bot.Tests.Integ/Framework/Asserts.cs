@@ -15,7 +15,7 @@ namespace Telegram.Bot.Tests.Integ.Framework
             params string[] excludeFields
         )
         {
-            if (expected == null || actual == null)
+            if (expected is null || actual is null)
             {
                 Assert.Equal(expected, actual);
             }

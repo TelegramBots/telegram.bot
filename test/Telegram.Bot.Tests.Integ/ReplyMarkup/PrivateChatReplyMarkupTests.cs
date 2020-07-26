@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Tests.Integ.Framework;
 using Telegram.Bot.Tests.Integ.Framework.Fixtures;
@@ -26,7 +25,7 @@ namespace Telegram.Bot.Tests.Integ.ReplyMarkup
             _classFixture = fixture;
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldReceiveContactInfo,
+        [OrderedFact("Should get contact info from keyboard reply markup",
             Skip = "Due to unexpected rate limiting errors")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.SendMessage)]
         public async Task Should_Receive_Contact_Info()
@@ -35,7 +34,7 @@ namespace Telegram.Bot.Tests.Integ.ReplyMarkup
                 chatId: _classFixture.PrivateChat,
                 text: "Share your contact info using the keyboard reply markup provided.",
                 replyMarkup: new ReplyKeyboardMarkup(
-                    keyboardRow: new[] {KeyboardButton.WithRequestContact("Share Contact"),},
+                    keyboardRow: new [] { KeyboardButton.WithRequestContact(text: "Share Contact") },
                     resizeKeyboard: true,
                     oneTimeKeyboard: true
                 )
@@ -43,9 +42,16 @@ namespace Telegram.Bot.Tests.Integ.ReplyMarkup
 
             Message contactMessage = await GetMessageFromChat(MessageType.Contact);
 
-            Assert.NotEmpty(contactMessage.Contact.FirstName);
+            Assert.NotEmpty(contactMessage.Contact!.FirstName);
             Assert.NotEmpty(contactMessage.Contact.PhoneNumber);
-            Assert.Equal(_classFixture.PrivateChat.Id, contactMessage.Contact.UserId);
+
+            if (contactMessage.Contact.UserId != null)
+            {
+                Assert.Equal(
+                    _classFixture.PrivateChat.Id,
+                    contactMessage.Contact.UserId.Value
+                );
+            }
 
             await BotClient.SendTextMessageAsync(
                 chatId: _classFixture.PrivateChat,
@@ -54,14 +60,16 @@ namespace Telegram.Bot.Tests.Integ.ReplyMarkup
             );
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldReceiveLocation)]
+        [OrderedFact("Should get location from keyboard reply markup")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.SendMessage)]
         public async Task Should_Receive_Location()
         {
             await BotClient.SendTextMessageAsync(
                 chatId: _classFixture.PrivateChat,
                 text: "Share your location using the keyboard reply markup",
-                replyMarkup: new ReplyKeyboardMarkup(KeyboardButton.WithRequestLocation("Share Location"))
+                replyMarkup: new ReplyKeyboardMarkup(
+                    KeyboardButton.WithRequestLocation(text: "Share Location")
+                )
             );
 
             Message locationMessage = await GetMessageFromChat(MessageType.Location);
@@ -75,20 +83,12 @@ namespace Telegram.Bot.Tests.Integ.ReplyMarkup
             );
         }
 
-        private Task<Message> GetMessageFromChat(MessageType messageType) =>
-            _fixture.UpdateReceiver.GetUpdatesAsync(
-                    predicate: u => u.Message.Type == messageType &&
-                                    u.Message.Chat.Id == _classFixture.PrivateChat.Id,
-                    updateTypes: UpdateType.Message
-                )
-                .ContinueWith(t => t.Result.Single().Message);
-
-        private static class FactTitles
-        {
-            public const string ShouldReceiveContactInfo = "Should get contact info from keyboard reply markup";
-
-            public const string ShouldReceiveLocation = "Should get location from keyboard reply markup";
-        }
+        private async Task<Message> GetMessageFromChat(MessageType messageType) =>
+            (await _fixture.UpdateReceiver.GetUpdateAsync(
+                predicate: u => u.Message!.Type == messageType &&
+                                u.Message.Chat!.Id == _classFixture.PrivateChat.Id,
+                updateTypes: UpdateType.Message
+            )).Message;
 
         public class Fixture : PrivateChatFixture
         {

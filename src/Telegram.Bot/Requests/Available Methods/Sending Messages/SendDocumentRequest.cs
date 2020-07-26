@@ -1,4 +1,4 @@
-﻿using System.Net.Http;
+using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Telegram.Bot.Helpers;
@@ -15,15 +15,11 @@ namespace Telegram.Bot.Requests
     /// Send documents
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class SendDocumentRequest : FileRequestBase<Message>,
-                                       INotifiableMessage,
-                                       IReplyMessage,
-                                       IReplyMarkupMessage<IReplyMarkup>,
-                                       IFormattableMessage,
-                                       IThumbMediaMessage
+    public class SendDocumentRequest : FileRequestBase<Message>, IChatTargetable
     {
         /// <summary>
-        /// Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        /// Unique identifier for the target chat or username of the target channel
+        /// (in the format @channelusername)
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public ChatId ChatId { get; }
@@ -38,27 +34,41 @@ namespace Telegram.Bot.Requests
         /// Photo caption (may also be used when resending photos by file_id), 0-1024 characters
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Caption { get; set; }
+        public string? Caption { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Thumbnail of the file sent. The thumbnail should be in JPEG format and less than
+        /// 200KB in size. A thumbnail's width and height should not exceed 90. Thumbnails can't
+        /// be reused and can be only uploaded as a new file.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InputMedia Thumb { get; set; }
+        public InputMedia? Thumb { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Change, if you want Telegram apps to show bold, italic, fixed-width text or inline
+        /// URLs in your bot's message
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public ParseMode ParseMode { get; set; }
+        public ParseMode? ParseMode { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// If the message is a reply, ID of the original message.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int ReplyToMessageId { get; set; }
+        public int? ReplyToMessageId { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Sends the message silently. Users will receive a notification with no sound.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool DisableNotification { get; set; }
+        public bool? DisableNotification { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// A JSON-serialized object for a custom reply keyboard,
+        /// instructions to hide keyboard or to force a reply from the user.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public IReplyMarkup ReplyMarkup { get; set; }
+        public IReplyMarkup? ReplyMarkup { get; set; }
 
         /// <summary>
         /// Initializes a new request with chatId and document
@@ -73,20 +83,24 @@ namespace Telegram.Bot.Requests
         }
 
         /// <inheritdoc />
-        public override HttpContent ToHttpContent()
+        public override HttpContent? ToHttpContent()
         {
-            HttpContent httpContent;
+            HttpContent? httpContent;
             if (Document.FileType == FileType.Stream || Thumb?.FileType == FileType.Stream)
             {
                 var multipartContent = GenerateMultipartFormDataContent("document", "thumb");
                 if (Document.FileType == FileType.Stream)
                 {
-                    multipartContent.AddStreamContent(Document.Content, "document", Document.FileName);
+                    multipartContent.AddStreamContent(
+                        Document.Content!,
+                        "document",
+                        Document.FileName!
+                    );
                 }
 
                 if (Thumb?.FileType == FileType.Stream)
                 {
-                    multipartContent.AddStreamContent(Thumb.Content, "thumb", Thumb.FileName);
+                    multipartContent.AddStreamContent(Thumb.Content!, "thumb", Thumb.FileName!);
                 }
 
                 httpContent = multipartContent;

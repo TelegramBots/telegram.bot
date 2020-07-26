@@ -21,7 +21,7 @@ namespace Telegram.Bot.Tests.Unit
         public void Should_Throw_On_Null_Token()
         {
             ArgumentNullException exception = Assert.Throws<ArgumentNullException>(
-                () => new TelegramBotClient(null)
+                () => new TelegramBotClient(null!)
             );
             Assert.Equal("token", exception.ParamName);
         }

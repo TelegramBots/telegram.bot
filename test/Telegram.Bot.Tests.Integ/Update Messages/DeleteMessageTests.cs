@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Telegram.Bot.Tests.Integ.Framework;
 using Telegram.Bot.Types;
@@ -21,7 +22,7 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
             _fixture = fixture;
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldDeleteMessageFromInlineQuery)]
+        [OrderedFact("Should delete message generated from an inline query result")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.AnswerInlineQuery)]
         public async Task Should_Delete_Message_From_InlineQuery()
         {
@@ -33,33 +34,29 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
             Update queryUpdate = await _fixture.UpdateReceiver.GetInlineQueryUpdateAsync();
 
             await BotClient.AnswerInlineQueryAsync(
-                inlineQueryId: queryUpdate.InlineQuery.Id,
-                results: new[]
+                inlineQueryId: queryUpdate.InlineQuery!.Id,
+                results: new []
                 {
                     new InlineQueryResultArticle(
                         id: "article-to-delete",
                         title: "Telegram Bot API",
-                        inputMessageContent: new InputTextMessageContent("https://www.telegram.org/")
+                        inputMessageContent: new InputTextMessageContent(
+                            messageText: "https://www.telegram.org/"
+                        )
                     )
                 },
                 cacheTime: 0
             );
 
-            (Update messageUpdate, Update chosenResultUpdate) =
-                await _fixture.UpdateReceiver.GetInlineQueryResultUpdates(MessageType.Text);
+            (Update messageUpdate, Update chosenResultUpdate) = await _fixture.UpdateReceiver
+                .GetInlineQueryResultUpdates(MessageType.Text);
 
-            await Task.Delay(1_000);
+            await Task.Delay(TimeSpan.FromSeconds(1));
 
             await BotClient.DeleteMessageAsync(
-                chatId: messageUpdate.Message.Chat.Id,
+                chatId: messageUpdate.Message!.Chat!.Id,
                 messageId: messageUpdate.Message.MessageId
             );
-        }
-
-        private static class FactTitles
-        {
-            public const string ShouldDeleteMessageFromInlineQuery =
-                "Should delete message generated from an inline query result";
         }
     }
 }

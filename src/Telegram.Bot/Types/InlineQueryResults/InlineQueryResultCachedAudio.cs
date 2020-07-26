@@ -1,17 +1,17 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineQueryResults.Abstractions;
 
 namespace Telegram.Bot.Types.InlineQueryResults
 {
     /// <summary>
-    /// Represents a link to an mp3 audio file stored on the Telegram servers. By default, this audio file will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the audio.
+    /// Represents a link to an mp3 audio file stored on the Telegram servers. By default, this
+    /// audio file will be sent by the user. Alternatively, you can use
+    /// <see cref="InputMessageContent"/> to send a message with the specified content instead
+    /// of the audio.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class InlineQueryResultCachedAudio : InlineQueryResultBase,
-        ICaptionInlineQueryResult,
-        IInputMessageContentResult
+    public class InlineQueryResultCachedAudio : InlineQueryResultBase
     {
         /// <summary>
         /// A valid file identifier for the audio file
@@ -19,19 +19,28 @@ namespace Telegram.Bot.Types.InlineQueryResults
         [JsonProperty(Required = Required.Always)]
         public string AudioFileId { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Caption of the result to be sent, 0-1024 characters.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Caption { get; set; }
+        public string? Caption { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width
+        /// text or inline URLs in the media caption.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public ParseMode ParseMode { get; set; }
+        public ParseMode? ParseMode { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Content of the message to be sent
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InputMessageContentBase InputMessageContent { get; set; }
+        public InputMessageContentBase? InputMessageContent { get; set; }
 
+#pragma warning disable 8618
         private InlineQueryResultCachedAudio()
+#pragma warning restore 8618
             : base(InlineQueryResultType.Audio)
         {
         }

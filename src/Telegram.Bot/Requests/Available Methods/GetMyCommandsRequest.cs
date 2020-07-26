@@ -6,7 +6,8 @@ using Telegram.Bot.Types;
 namespace Telegram.Bot.Requests
 {
     /// <summary>
-    /// Use this method to get the current list of the bot's commands. Requires no parameters. Returns array of <see cref="BotCommand"/> on success.
+    /// Use this method to get the current list of the bot's commands. Requires no parameters.
+    /// Returns array of <see cref="BotCommand"/> on success.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
     public class GetMyCommandsRequest : RequestBase<BotCommand[]>

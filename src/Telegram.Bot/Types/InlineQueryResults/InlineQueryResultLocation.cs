@@ -1,57 +1,72 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Telegram.Bot.Types.InlineQueryResults.Abstractions;
 
 namespace Telegram.Bot.Types.InlineQueryResults
 {
     /// <summary>
-    /// Represents a location on a map. By default, the location will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the location.
+    /// Represents a location on a map. By default, the location will be sent by the user.
+    /// Alternatively, you can use <see cref="InputMessageContent"/> to send a message with the
+    /// specified content instead of the location.
     /// </summary>
     /// <remarks>
-    /// This will only work in Telegram versions released after 9 April, 2016. Older clients will ignore them.
+    /// This will only work in Telegram versions released after 9 April, 2016. Older clients will
+    /// ignore them.
     /// </remarks>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class InlineQueryResultLocation : InlineQueryResultBase,
-        IThumbnailInlineQueryResult,
-        ITitleInlineQueryResult,
-        IInputMessageContentResult,
-        ILocationInlineQueryResult
+    public class InlineQueryResultLocation : InlineQueryResultBase
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Latitude of the location in degrees
+        /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public float Latitude { get; set; }
+        public double Latitude { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Longitude of the location in degrees
+        /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public float Longitude { get; set; }
+        public double Longitude { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Title of the result
+        /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string Title { get; set; }
 
         /// <summary>
-        /// Period in seconds for which the location can be updated, should be between 60 and 86400.
+        /// Period in seconds for which the location can be updated, should be between
+        /// 60 and 86400.
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int LivePeriod { get; set; }
+        public int? LivePeriod { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// URL of the static thumbnail for the result.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string ThumbUrl { get; set; }
+        public string? ThumbUrl { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Thumbnail width.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int ThumbWidth { get; set; }
+        public int? ThumbWidth { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Thumbnail height.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int ThumbHeight { get; set; }
+        public int? ThumbHeight { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Title of the result
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InputMessageContentBase InputMessageContent { get; set; }
+        public InputMessageContentBase? InputMessageContent { get; set; }
 
+#pragma warning disable 8618
         private InlineQueryResultLocation()
+#pragma warning restore 8618
             : base(InlineQueryResultType.Location)
         {
         }
@@ -63,7 +78,7 @@ namespace Telegram.Bot.Types.InlineQueryResults
         /// <param name="latitude">Latitude of the location in degrees</param>
         /// <param name="longitude">Longitude of the location in degrees</param>
         /// <param name="title">Title of the result</param>
-        public InlineQueryResultLocation(string id, float latitude, float longitude, string title)
+        public InlineQueryResultLocation(string id, double latitude, double longitude, string title)
             : base(InlineQueryResultType.Location, id)
         {
             Latitude = latitude;

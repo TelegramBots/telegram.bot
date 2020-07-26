@@ -2,16 +2,17 @@ using System;
 using System.Threading.Tasks;
 using Telegram.Bot.Tests.Integ.Framework;
 using Telegram.Bot.Types;
+using Xunit;
 
 namespace Telegram.Bot.Tests.Integ.Admin_Bot
 {
-    public class ChatMemberAdministrationTestFixture : IDisposable
+    public class ChatMemberAdministrationTestFixture : IAsyncLifetime
     {
-        public Chat RegularMemberChat { get; }
+        public Chat RegularMemberChat { get; private set; }
 
-        public int RegularMemberUserId { get; }
+        public int RegularMemberUserId { get; private set; }
 
-        public string RegularMemberUserName { get; }
+        public string RegularMemberUserName { get; private set; }
 
         public string GroupInviteLink { get; set; }
 
@@ -20,25 +21,6 @@ namespace Telegram.Bot.Tests.Integ.Admin_Bot
         public ChatMemberAdministrationTestFixture(TestsFixture testsFixture)
         {
             _testsFixture = testsFixture;
-            const string collectionName = Constants.TestCollections.ChatMemberAdministration;
-
-            RegularMemberChat = GetChat(_testsFixture, collectionName).GetAwaiter().GetResult();
-
-            testsFixture.SendTestCollectionNotificationAsync(
-                collectionName,
-                $"Chosen regular member is @{RegularMemberChat.Username.Replace("_", @"\_")}"
-            ).GetAwaiter().GetResult();
-
-            RegularMemberUserId = (int) RegularMemberChat.Id;
-            RegularMemberUserName = RegularMemberChat.Username;
-            // Updates from regular user will be received
-            _testsFixture.UpdateReceiver.AllowedUsernames.Add(RegularMemberUserName);
-        }
-
-        public void Dispose()
-        {
-            // Remove regular user from AllowedUserNames
-            _testsFixture.UpdateReceiver.AllowedUsernames.Remove(RegularMemberUserName);
         }
 
         private static async Task<Chat> GetChat(TestsFixture testsFixture, string collectionName)
@@ -62,7 +44,7 @@ namespace Telegram.Bot.Tests.Integ.Admin_Bot
                 chat = await testsFixture.GetChatFromAdminAsync();
             }
 
-            if (chat.Username == null)
+            if (chat.Username is null)
             {
                 await testsFixture.SendTestCollectionNotificationAsync(collectionName,
                     $"[{chat.FirstName}](tg://user?id={chat.Id}) doesn't have a username.\n" +
@@ -72,6 +54,31 @@ namespace Telegram.Bot.Tests.Integ.Admin_Bot
             }
 
             return chat;
+        }
+
+        public async Task InitializeAsync()
+        {
+            const string collectionName = Constants.TestCollections.ChatMemberAdministration;
+
+            RegularMemberChat = await GetChat(_testsFixture, collectionName);
+
+            await _testsFixture.SendTestCollectionNotificationAsync(
+                collectionName,
+                $"Chosen regular member is @{RegularMemberChat.Username!.Replace("_", @"\_")}"
+            );
+
+            RegularMemberUserId = (int) RegularMemberChat.Id;
+            RegularMemberUserName = RegularMemberChat.Username;
+            // Updates from regular user will be received
+            _testsFixture.UpdateReceiver.AllowedUsernames.Add(RegularMemberUserName);
+        }
+
+        public Task DisposeAsync()
+        {
+            // Remove regular user from AllowedUserNames
+            _testsFixture.UpdateReceiver.AllowedUsernames.Remove(RegularMemberUserName);
+
+            return Task.CompletedTask;
         }
     }
 }

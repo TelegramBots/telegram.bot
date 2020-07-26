@@ -26,8 +26,8 @@ namespace Telegram.Bot.Types
         /// Initializes an instance of <see cref="InputMedia"/> with either a file_id or a HTTP URL
         /// </summary>
         /// <param name="value">
-        /// file_id to send a file that exists on the Telegram servers or an HTTP URL for Telegram to get a file
-        /// from the Internet
+        /// file_id to send a file that exists on the Telegram servers or an HTTP URL for Telegram
+        /// to get a file from the Internet
         /// </param>
         public InputMedia(string value)
             : base(value)
@@ -38,11 +38,11 @@ namespace Telegram.Bot.Types
         /// Initializes an instance of <see cref="InputMedia"/> with either a file_id or a HTTP URL
         /// </summary>
         /// <param name="value">
-        /// file_id to send a file that exists on the Telegram servers or an HTTP URL for Telegram to get a file
-        /// from the Internet
+        /// file_id to send a file that exists on the Telegram servers or an HTTP URL for Telegram
+        /// to get a file from the Internet
         /// </param>
-        public static implicit operator InputMedia(string value) =>
-            value == null
+        public static implicit operator InputMedia?(string? value) =>
+            value is null
                 ? null
                 : new InputMedia(value);
     }

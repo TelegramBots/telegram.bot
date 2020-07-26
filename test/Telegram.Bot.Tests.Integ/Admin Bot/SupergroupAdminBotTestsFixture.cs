@@ -1,4 +1,3 @@
-using System;
 using System.IO;
 using System.Threading.Tasks;
 using Telegram.Bot.Tests.Integ.Framework;
@@ -30,13 +29,11 @@ namespace Telegram.Bot.Tests.Integ.Admin_Bot
             // file_ids after changing chat photo
             if (!string.IsNullOrEmpty(chat.Photo?.BigFileId))
             {
-                using (MemoryStream stream = new MemoryStream())
-                {
-                    await TestsFixture.BotClient
-                        .GetInfoAndDownloadFileAsync(chat.Photo.BigFileId, stream);
+                await using MemoryStream stream = new MemoryStream();
+                await TestsFixture.BotClient
+                    .GetInfoAndDownloadFileAsync(chat.Photo.BigFileId, stream);
 
-                    _oldChatPhoto = stream.ToArray();
-                }
+                _oldChatPhoto = stream.ToArray();
             }
 
             // Save default permissions so they can be restored
@@ -48,13 +45,11 @@ namespace Telegram.Bot.Tests.Integ.Admin_Bot
             // If chat had a photo before, reset the photo back.
             if (_oldChatPhoto != null)
             {
-                using (MemoryStream photoStream = new MemoryStream(_oldChatPhoto))
-                {
-                    await TestsFixture.BotClient.SetChatPhotoAsync(
-                        chatId: Chat.Id,
-                        photo: photoStream
-                    );
-                }
+                await using MemoryStream photoStream = new MemoryStream(_oldChatPhoto);
+                await TestsFixture.BotClient.SetChatPhotoAsync(
+                    chatId: Chat.Id,
+                    photo: photoStream
+                );
             }
 
             // Reset original default permissions

@@ -1,4 +1,4 @@
-using System.IO;
+﻿using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Telegram.Bot.Converters;
@@ -13,31 +13,23 @@ namespace Telegram.Bot.Types.InputFiles
     [JsonConverter(typeof(InputFileConverter))]
     public class InputFileStream : IInputFile
     {
-        /// <summary> 
+        /// <summary>
         /// File content to upload
         /// </summary>
-        public Stream Content { get; protected set; }
+        public Stream? Content { get; protected set; }
 
         /// <summary>
         /// Name of a file to upload using multipart/form-data
         /// </summary>
-        public string FileName { get; set; }
+        public string? FileName { get; set; }
 
         /// <inheritdoc cref="IInputFile.FileType"/>
         public virtual FileType FileType => FileType.Stream;
 
         /// <summary>
-        /// ToDo
+        /// Constructs a new instance of <see cref="InputFileStream"/>
         /// </summary>
         protected InputFileStream()
-        { }
-
-        /// <summary>
-        /// Constructs an <see cref="InputFileStream"/> from a <see cref="Stream"/>
-        /// </summary>
-        /// <param name="content"><see cref="Stream"/> containing the file</param>
-        public InputFileStream(Stream content)
-            : this(content, default)
         { }
 
         /// <summary>
@@ -45,18 +37,24 @@ namespace Telegram.Bot.Types.InputFiles
         /// </summary>
         /// <param name="content"><see cref="Stream"/> containing the file</param>
         /// <param name="fileName">Name of the file</param>
-        public InputFileStream(Stream content, string fileName)
+        public InputFileStream(Stream content, string? fileName = default)
         {
             Content = content;
             FileName = fileName;
         }
 
         /// <summary>
-        /// ToDo
+        /// Performs an implicit conversion from <see cref="Stream"/> to
+        /// <see cref="InputFileStream"/>
         /// </summary>
-        /// <param name="stream"></param>
-        public static implicit operator InputFileStream(Stream stream) =>
-            stream == null
+        /// <param name="stream">
+        /// <see cref="Stream"/> instance to be converted to <see cref="InputFileStream"/>
+        /// </param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator InputFileStream?(Stream stream) =>
+            stream is null
                 ? default
                 : new InputFileStream(stream);
     }

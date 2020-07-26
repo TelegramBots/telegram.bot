@@ -26,13 +26,15 @@ namespace Telegram.Bot.Types.InlineQueryResults
         /// Inline keyboard attached to the message
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InlineKeyboardMarkup ReplyMarkup { get; set; }
+        public InlineKeyboardMarkup? ReplyMarkup { get; set; }
 
         ///  <summary>
         /// Initializes a new inline query result
         ///  </summary>
         /// <param name="type">Type of the result</param>
+#pragma warning disable 8618
         protected InlineQueryResultBase(InlineQueryResultType type)
+#pragma warning restore 8618
         {
             Type = type;
         }

@@ -1,58 +1,63 @@
 ﻿using System.Threading.Tasks;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
+using Xunit;
 
 namespace Telegram.Bot.Tests.Integ.Framework.Fixtures
 {
-    public class ChannelChatFixture
+    public class ChannelChatFixture : IAsyncLifetime
     {
-        public Chat ChannelChat { get; }
-
-        public string ChannelChatId { get; private set; }
-
         private readonly TestsFixture _testsFixture;
+        private readonly string _collectionName;
+
+        public Chat ChannelChat { get; private set; }
+        public string ChannelChatId { get; private set; }
 
         public ChannelChatFixture(TestsFixture testsFixture, string collectionName)
         {
             _testsFixture = testsFixture;
+            _collectionName = collectionName;
+        }
 
-            if (_testsFixture.ChannelChat == null)
-            {
-                _testsFixture.ChannelChat = GetChat(collectionName).GetAwaiter().GetResult();
-            }
+        public async Task InitializeAsync()
+        {
+            _testsFixture.ChannelChat ??= await GetChat(_collectionName);
+
             ChannelChat = _testsFixture.ChannelChat;
 
-            ChannelChatId = ChannelChat.Username == null
+            ChannelChatId = ChannelChat.Username is null
                 ? ChannelChat.Id.ToString()
                 : '@' + ChannelChat.Username;
 
-            _testsFixture.SendTestCollectionNotificationAsync(
-                collectionName,
+            await _testsFixture.SendTestCollectionNotificationAsync(
+                _collectionName,
                 $"Tests will be executed in channel {ChannelChatId.Replace("_", @"\_")}"
-            ).GetAwaiter().GetResult();
+            );
+
+            await InitializeCoreAsync();
         }
+
+        public async Task DisposeAsync() => await DisposeCoreAsync();
 
         private async Task<Chat> GetChat(string collectionName)
         {
-            Chat chat;
-            string chatId = ConfigurationProvider.TestConfigurations.ChannelChatId;
-            if (chatId == null)
-            {
-                await _testsFixture.UpdateReceiver.DiscardNewUpdatesAsync();
+            var chatId = ConfigurationProvider.TestConfigurations.ChannelChatId;
+            if (chatId != null) return await _testsFixture.BotClient.GetChatAsync(chatId);
 
-                string botUserName = _testsFixture.BotUser.Username;
-                await _testsFixture.SendTestCollectionNotificationAsync(collectionName,
-                    "No channel is set in test settings. Tester should forward a message from a channel " +
-                    $"so bot can run tests there. @{botUserName} must be an admin in that channel."
-                );
+            await _testsFixture.UpdateReceiver.DiscardNewUpdatesAsync();
 
-                chat = await _testsFixture.GetChatFromTesterAsync(ChatType.Channel);
-            }
-            else
-            {
-                chat = await _testsFixture.BotClient.GetChatAsync(chatId);
-            }
-            return chat;
+            var botUserName = _testsFixture.BotUser.Username;
+            await _testsFixture.SendTestCollectionNotificationAsync(
+                collectionName,
+                "No channel is set in test settings. Tester should forward a " +
+                $"message from a channel so bot can run tests there. @{botUserName} " +
+                "must be an admin in that channel."
+            );
+
+            return await _testsFixture.GetChatFromTesterAsync(ChatType.Channel);
         }
+
+        protected virtual Task InitializeCoreAsync() => Task.CompletedTask;
+        protected virtual Task DisposeCoreAsync() => Task.CompletedTask;
     }
 }

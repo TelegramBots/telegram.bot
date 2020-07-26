@@ -15,7 +15,9 @@ namespace Telegram.Bot.Types.InlineQueryResults
         [JsonProperty(Required = Required.Always)]
         public string GameShortName { get; set; }
 
+#pragma warning disable 8618
         private InlineQueryResultGame()
+#pragma warning restore 8618
             : base(InlineQueryResultType.Game)
         {
         }

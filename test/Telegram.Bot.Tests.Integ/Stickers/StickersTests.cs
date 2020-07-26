@@ -35,8 +35,8 @@
 //        [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.GetStickerSet)]
 //        public async Task Should_Get_Sticker_Set()
 //        {
-//            const string setName = "EvilMinds";
-//            const string setTitle = "Evil Minds";
+//            string setName = "EvilMinds";
+//            string setTitle = "Evil Minds";
 //            StickerSet stickerSet = await BotClient.GetStickerSetAsync(
 //                name: setName
 //            );
@@ -54,8 +54,8 @@
 //        [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.GetStickerSet)]
 //        public async Task Should_Get_Sticker_Set_With_Masks()
 //        {
-//            const string setName = "masks2";
-//            const string setTitle = "Masks II: Face Lift";
+//            string setName = "masks2";
+//            string setTitle = "Masks II: Face Lift";
 //            StickerSet stickerSet = await BotClient.GetStickerSetAsync(
 //                name: setName
 //            );
@@ -97,7 +97,7 @@
 //        public async Task Should_Upload_Stickers()
 //        {
 //            List<File> stickerFiles = new List<File>(2);
-//            foreach (string pngFile in new[] {Constants.FileNames.Photos.Gnu, Constants.FileNames.Photos.Tux})
+//            foreach (string pngFile in new [] { Constants.FileNames.Photos.Gnu, Constants.FileNames.Photos.Tux })
 //            {
 //                File file;
 //                using (System.IO.Stream stream = System.IO.File.OpenRead(pngFile))
@@ -122,8 +122,8 @@
 //        [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.CreateNewStickerSet)]
 //        public async Task Should_Throw_InvalidStickerSetNameException()
 //        {
-//            BadRequestException exception = await Assert.ThrowsAnyAsync<BadRequestException>(() =>
-//                BotClient.CreateNewStickerSetAsync(
+//            BadRequestException exception = await Assert.ThrowsAsync<BadRequestException>(async () =>
+//                await BotClient.CreateNewStickerSetAsync(
 //                    userId: _classFixture.OwnerUserId,
 //                    name: "Invalid_Sticker_Set_Name",
 //                    title: "Sticker Set Title",
@@ -140,8 +140,8 @@
 //        [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.CreateNewStickerSet)]
 //        public async Task Should_Throw_InvalidStickerEmojisException()
 //        {
-//            BadRequestException exception = await Assert.ThrowsAnyAsync<BadRequestException>(() =>
-//                BotClient.CreateNewStickerSetAsync(
+//            BadRequestException exception = await Assert.ThrowsAsync<BadRequestException>(async () =>
+//                await BotClient.CreateNewStickerSetAsync(
 //                    userId: _classFixture.OwnerUserId,
 //                    name: "valid_name3" + _classFixture.TestStickerSetName,
 //                    title: "Sticker Set Title",
@@ -158,12 +158,11 @@
 //        [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.CreateNewStickerSet)]
 //        public async Task Should_Throw_InvalidStickerDimensionsException()
 //        {
-//            // ToDo exception when sending jpeg file. Bad Request: STICKER_PNG_NOPNG
 //            BadRequestException exception;
 //            using (System.IO.Stream stream = System.IO.File.OpenRead(Constants.FileNames.Photos.Logo))
 //            {
-//                exception = await Assert.ThrowsAnyAsync<BadRequestException>(() =>
-//                    BotClient.CreateNewStickerSetAsync(
+//                exception = await Assert.ThrowsAsync<BadRequestException>(async () =>
+//                    await BotClient.CreateNewStickerSetAsync(
 //                        userId: _classFixture.OwnerUserId,
 //                        name: "valid_name2" + _classFixture.TestStickerSetName,
 //                        title: "Sticker Set Title",
@@ -238,8 +237,8 @@
 //            Exception exception;
 //            using (System.IO.Stream stream = System.IO.File.OpenRead(Constants.FileNames.Photos.Ruby))
 //            {
-//                exception = await Assert.ThrowsAnyAsync<Exception>(() =>
-//                    BotClient.CreateNewStickerSetAsync(
+//                exception = await Assert.ThrowsAsync<Exception>(async () =>
+//                    await BotClient.CreateNewStickerSetAsync(
 //                        userId: _classFixture.OwnerUserId,
 //                        name: _classFixture.TestStickerSetName,
 //                        title: "Another Test Sticker Set",
@@ -349,8 +348,8 @@
 //        {
 //            StickerSet testStickerSet = await BotClient.GetStickerSetAsync(_classFixture.TestStickerSet.Name);
 //
-//            BadRequestException exception = await Assert.ThrowsAnyAsync<BadRequestException>(() =>
-//                BotClient.DeleteStickerFromSetAsync(
+//            BadRequestException exception = await Assert.ThrowsAsync<BadRequestException>(async () =>
+//                await BotClient.DeleteStickerFromSetAsync(
 //                    sticker: testStickerSet.Stickers.Single().FileId
 //                )
 //            );

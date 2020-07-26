@@ -19,24 +19,24 @@ namespace Telegram.Bot.Types
         /// Optional. Performer of the audio as defined by sender or by audio tags
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Performer { get; set; }
+        public string? Performer { get; set; }
 
         /// <summary>
         /// Optional. Title of the audio as defined by sender or by audio tags
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Title { get; set; }
+        public string? Title { get; set; }
 
         /// <summary>
         /// Optional. MIME type of the file as defined by sender
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string MimeType { get; set; }
+        public string? MimeType { get; set; }
 
         /// <summary>
         /// Optional. Thumbnail of the album cover to which the music file belongs
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public PhotoSize Thumb { get; set; }
+        public PhotoSize? Thumb { get; set; }
     }
 }

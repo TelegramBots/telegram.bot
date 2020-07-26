@@ -19,7 +19,7 @@ namespace Telegram.Bot.Tests.Integ.Other
             _fixture = fixture;
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldGetBotProfilePhotos)]
+        [OrderedFact("Should get bot's profile photos")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.GetUserProfilePhotos)]
         public async Task Should_Get_User_Profile_Photos()
         {
@@ -29,11 +29,6 @@ namespace Telegram.Bot.Tests.Integ.Other
 
             Assert.True(1 <= profilePhotos.TotalCount);
             Assert.NotNull(profilePhotos.Photos.First());
-        }
-
-        private static class FactTitles
-        {
-            public const string ShouldGetBotProfilePhotos = "Should get bot's profile photos";
         }
     }
 }

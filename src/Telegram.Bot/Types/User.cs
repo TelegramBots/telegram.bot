@@ -26,25 +26,25 @@ namespace Telegram.Bot.Types
         /// User's or bot's first name
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string FirstName { get; set; }
+        public string FirstName { get; set; } = default!;
 
         /// <summary>
         /// Optional. User's or bot's last name
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         /// <summary>
         /// Optional. User's or bot's username
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Username { get; set; }
+        public string? Username { get; set; }
 
         /// <summary>
         /// Optional. IETF language tag of the user's language
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string LanguageCode { get; set; }
+        public string? LanguageCode { get; set; }
 
         /// <summary>
         /// Optional. True, if the bot can be invited to groups. Returned only in getMe
@@ -65,10 +65,10 @@ namespace Telegram.Bot.Types
         public bool? SupportsInlineQueries { get; set; }
 
         /// <inheritdoc />
-        public override bool Equals(object obj) => Equals(obj as User);
+        public override bool Equals(object? obj) => Equals(obj as User);
 
         /// <inheritdoc />
-        public bool Equals(User other)
+        public bool Equals(User? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
@@ -90,7 +90,7 @@ namespace Telegram.Bot.Types
         /// <param name="lhs">Left-hand side user in expression</param>
         /// <param name="rhs">Right-hand side user in expression</param>
         /// <returns>true if users are equal, otherwise false</returns>
-        public static bool operator ==(User lhs, User rhs) =>
+        public static bool operator ==(User? lhs, User? rhs) =>
             lhs?.Equals(rhs) ?? ReferenceEquals(rhs, null);
 
         /// <summary>
@@ -99,7 +99,7 @@ namespace Telegram.Bot.Types
         /// <param name="lhs">Left-hand side user in expression</param>
         /// <param name="rhs">Right-hand side user in expression</param>
         /// <returns>true if users are not equal, otherwise false</returns>
-        public static bool operator !=(User lhs, User rhs) => !(lhs == rhs);
+        public static bool operator !=(User? lhs, User? rhs) => !(lhs == rhs);
 
         /// <inheritdoc />
         public override int GetHashCode()
@@ -122,7 +122,7 @@ namespace Telegram.Bot.Types
         }
 
         /// <inheritdoc/>
-        public override string ToString() => (Username == null
+        public override string ToString() => (Username is null
                                                  ? FirstName + LastName?.Insert(0, " ")
                                                  : $"@{Username}") +
                                              $" ({Id})";

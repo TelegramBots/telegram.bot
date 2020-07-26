@@ -1,19 +1,19 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Telegram.Bot.Types.InlineQueryResults.Abstractions;
 
 namespace Telegram.Bot.Types.InlineQueryResults
 {
     /// <summary>
-    /// Represents a contact with a phone number. By default, this contact will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the contact.
+    /// Represents a contact with a phone number. By default, this contact will be sent by the
+    /// user. Alternatively, you can use <see cref="InputMessageContent"/> to send a message with
+    /// the specified content instead of the contact.
     /// </summary>
     /// <remarks>
-    /// This will only work in Telegram versions released after 9 April, 2016. Older clients will ignore them.
+    /// This will only work in Telegram versions released after 9 April, 2016. Older clients
+    /// will ignore them.
     /// </remarks>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class InlineQueryResultContact : InlineQueryResultBase,
-        IThumbnailInlineQueryResult,
-        IInputMessageContentResult
+    public class InlineQueryResultContact : InlineQueryResultBase
     {
         /// <summary>
         /// Contact's phone number
@@ -31,31 +31,41 @@ namespace Telegram.Bot.Types.InlineQueryResults
         /// Optional. Contact's last name
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         /// <summary>
         /// Optional. Additional data about the contact in the form of a vCard, 0-2048 bytes
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Vcard { get; set; }
+        public string? Vcard { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// URL of the static thumbnail for the result.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string ThumbUrl { get; set; }
+        public string? ThumbUrl { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Thumbnail width.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int ThumbWidth { get; set; }
+        public int? ThumbWidth { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Thumbnail height.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int ThumbHeight { get; set; }
+        public int? ThumbHeight { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Content of the message to be sent
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InputMessageContentBase InputMessageContent { get; set; }
+        public InputMessageContentBase? InputMessageContent { get; set; }
 
+#pragma warning disable 8618
         private InlineQueryResultContact()
+#pragma warning restore 8618
             : base(InlineQueryResultType.Contact)
         { }
 

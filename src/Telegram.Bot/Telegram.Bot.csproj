@@ -1,8 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard1.1;net45</TargetFrameworks>
-    <LangVersion>7.1</LangVersion>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>8</LangVersion>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <IncludeSymbols>true</IncludeSymbols>
@@ -12,14 +12,20 @@
     <Title>Telegram Bot API Client</Title>
     <Description>The Bot API is an HTTP-based interface created for developers keen on building bots for Telegram.</Description>
     <PackageId>Telegram.Bot</PackageId>
-    <Authors>RoundRobin,Poulad,Aleksey Usatov</Authors>
+    <Authors>RoundRobin,Poulad,tuscen,TelegramBots</Authors>
     <Copyright>Copyright © Robin Müller 2016</Copyright>
     <PackageIconUrl>https://raw.githubusercontent.com/TelegramBots/Telegram.Bot/master/package-icon.gif</PackageIconUrl>
+    <PackageIcon>package-icon.png</PackageIcon>
     <PackageProjectUrl>https://github.com/TelegramBots/telegram.bot</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.githubusercontent.com/TelegramBots/Telegram.Bot/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/TelegramBots/telegram.bot.git</RepositoryUrl>
     <PackageTags>Telegram;Bot;Api;Payment;Inline;Games</PackageTags>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../package-icon.png" Pack="true" PackagePath="/" />
+  </ItemGroup>
 
   <PropertyGroup Condition="'$(TF_BUILD)' == 'true'">
     <ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
@@ -34,17 +40,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
-    <PackageReference Include="System.Net.Requests" Version="4.3.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All"/>
-  </ItemGroup>
-
-  <ItemGroup Condition="'$(TargetFramework)'=='net45'">
-    <Reference Include="System.Net.Http" />
-    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net45" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.1" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="All" />
+    <PackageReference Include="Nullable" Version="1.2.1" PrivateAssets="All" />
   </ItemGroup>
 
 </Project>

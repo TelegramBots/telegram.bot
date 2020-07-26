@@ -13,7 +13,7 @@ namespace Telegram.Bot.Types
         /// Option text, 1-100 characters
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string Text { get; set; }
+        public string Text { get; set; } = default!;
 
         /// <summary>
         /// Number of users that voted for this option

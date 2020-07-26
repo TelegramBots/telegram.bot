@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Telegram.Bot.Tests.Integ.Framework;
 using Telegram.Bot.Types;
@@ -18,7 +19,7 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
             _fixture = fixture;
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldDeleteMessage)]
+        [OrderedFact("Should delete message")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.SendMessage)]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.DeleteMessage)]
         public async Task Should_Delete_Message()
@@ -28,17 +29,12 @@ namespace Telegram.Bot.Tests.Integ.Update_Messages
                 text: "This message will be deleted shortly"
             );
 
-            await Task.Delay(1_000);
+            await Task.Delay(TimeSpan.FromSeconds(1));
 
             await BotClient.DeleteMessageAsync(
-                chatId: message.Chat.Id,
+                chatId: message.Chat!.Id,
                 messageId: message.MessageId
             );
-        }
-
-        private static class FactTitles
-        {
-            public const string ShouldDeleteMessage = "Should delete message";
         }
     }
 }

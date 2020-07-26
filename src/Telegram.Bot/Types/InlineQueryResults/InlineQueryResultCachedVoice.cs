@@ -1,20 +1,21 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Telegram.Bot.Types.Enums;
-using Telegram.Bot.Types.InlineQueryResults.Abstractions;
 
 namespace Telegram.Bot.Types.InlineQueryResults
 {
     /// <summary>
-    /// Represents a link to a voice message stored on the Telegram servers. By default, this voice message will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the voice message.
+    /// Represents a link to a voice message stored on the Telegram servers. By default, this
+    /// voice message will be sent by the user. Alternatively, you can use
+    /// <see cref="InputMessageContent"/> to send a message with the specified content instead
+    /// of the voice message.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class InlineQueryResultCachedVoice : InlineQueryResultBase,
-        ICaptionInlineQueryResult,
-        ITitleInlineQueryResult,
-        IInputMessageContentResult
+    public class InlineQueryResultCachedVoice : InlineQueryResultBase
     {
-        /// <inheritdoc />
+        /// <summary>
+        /// Title of the result
+        /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string Title { get; set; }
 
@@ -24,19 +25,28 @@ namespace Telegram.Bot.Types.InlineQueryResults
         [JsonProperty(Required = Required.Always)]
         public string VoiceFileId { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Caption of the result to be sent, 0-1024 characters.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Caption { get; set; }
+        public string? Caption { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Send Markdown or HTML, if you want Telegram apps to show bold, italic, fixed-width
+        /// text or inline URLs in the media caption.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public ParseMode ParseMode { get; set; }
+        public ParseMode? ParseMode { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Content of the message to be sent
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InputMessageContentBase InputMessageContent { get; set; }
+        public InputMessageContentBase? InputMessageContent { get; set; }
 
+#pragma warning disable 8618
         private InlineQueryResultCachedVoice()
+#pragma warning restore 8618
             : base(InlineQueryResultType.Voice)
         { }
 

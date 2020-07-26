@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+using System;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
 using Telegram.Bot.Converters;
 
 namespace Telegram.Bot.Types
@@ -9,6 +11,8 @@ namespace Telegram.Bot.Types
     [JsonConverter(typeof(ChatIdConverter))]
     public class ChatId
     {
+        private static readonly Regex NameValidation = new Regex("^@[a-zA-Z0-9_]{5,32}$");
+
         /// <summary>
         /// Unique identifier for the chat
         /// </summary>
@@ -17,7 +21,7 @@ namespace Telegram.Bot.Types
         /// <summary>
         /// Username of the channel (in the format @channelusername)
         /// </summary>
-        public readonly string Username;
+        public readonly string? Username;
 
         /// <summary>
         /// Create a <see cref="ChatId"/> using an identifier
@@ -41,19 +45,29 @@ namespace Telegram.Bot.Types
         /// Create a <see cref="ChatId"/> using an user name
         /// </summary>
         /// <param name="username">The user name</param>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public ChatId(string username)
         {
-            if (username.Length > 1 && username.Substring(0, 1) == "@")
+            if (username == null)
+            {
+                throw new ArgumentNullException(nameof(username));
+            }
+
+            if (NameValidation.IsMatch(username))
             {
                 Username = username;
-            }
-            else if (int.TryParse(username, out int chatId))
-            {
-                Identifier = chatId;
             }
             else if (long.TryParse(username, out long identifier))
             {
                 Identifier = identifier;
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(username),
+                    username,
+                    $"{nameof(username)} value has to start with '@' symbol and be 5 to 32 characters long or be a valid long value."
+                );
             }
         }
 
@@ -61,11 +75,14 @@ namespace Telegram.Bot.Types
         /// Determines whether the specified object is equal to the current object.
         /// </summary>
         /// <param name="obj">The object to compare with the current object.</param>
-        /// <returns>true if the specified object is equal to the current object; otherwise, false.</returns>
+        /// <returns>
+        /// <c>true</c> if the specified object is equal to the current object; otherwise,
+        /// <c>false</c>.
+        /// </returns>
         public override bool Equals(object obj) => ((string)this).Equals(obj);
 
         /// <summary>
-        /// Gets the hash code of this object 
+        /// Gets the hash code of this object
         /// </summary>
         /// <returns>A hash code for the current object.</returns>
         public override int GetHashCode() => ((string)this).GetHashCode();
@@ -97,14 +114,15 @@ namespace Telegram.Bot.Types
         /// <summary>
         /// Create a <c>string</c> out of a <see cref="ChatId"/>
         /// </summary>
-        /// <param name="chatid">The <see cref="ChatId"/>The ChatId</param>
-        public static implicit operator string(ChatId chatid) => chatid.Username ?? chatid.Identifier.ToString();
+        /// <param name="chatId">The <see cref="ChatId"/>The ChatId</param>
+        public static implicit operator string(ChatId chatId) =>
+            chatId.Username ?? chatId.Identifier.ToString();
 
         /// <summary>
         /// Convert a Chat Object to a <see cref="ChatId"/>
         /// </summary>
         /// <param name="chat"></param>
         public static implicit operator ChatId(Chat chat) =>
-            chat.Id != default ? chat.Id : (ChatId)("@" + chat.Username);
+            chat.Id != default ? chat.Id : new ChatId($"@{chat.Username}");
     }
 }

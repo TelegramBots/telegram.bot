@@ -53,7 +53,7 @@ namespace Telegram.Bot.Tests.Integ.Stickers
                 Update cqUpdate = await testsFixture.UpdateReceiver
                     .GetCallbackQueryUpdateAsync(cqMessage.MessageId, cqData);
 
-                ownerId = cqUpdate.CallbackQuery.From.Id;
+                ownerId = cqUpdate.CallbackQuery!.From.Id;
             }
             else
             {

@@ -11,8 +11,7 @@ namespace Telegram.Bot.Requests
     /// Stop updating a live location message sent by the bot
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class StopMessageLiveLocationRequest : RequestBase<Message>,
-                                                  IInlineReplyMarkupMessage
+    public class StopMessageLiveLocationRequest : RequestBase<Message>, IChatTargetable
     {
         /// <summary>
         /// Unique identifier for the target chat or username of the target channel
@@ -26,14 +25,18 @@ namespace Telegram.Bot.Requests
         [JsonProperty(Required = Required.Always)]
         public int MessageId { get; }
 
-        /// <inheritdoc cref="IInlineReplyMarkupMessage.ReplyMarkup" />
+        /// <summary>
+        /// A JSON-serialized object for an inline keyboard
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InlineKeyboardMarkup ReplyMarkup { get; set; }
+        public InlineKeyboardMarkup? ReplyMarkup { get; set; }
 
         /// <summary>
         /// Initializes a new request with chatId
         /// </summary>
-        /// <param name="chatId">Unique identifier for the target chat or username of the target channel</param>
+        /// <param name="chatId">
+        /// Unique identifier for the target chat or username of the target channel
+        /// </param>
         /// <param name="messageId">Identifier of the sent message</param>
         public StopMessageLiveLocationRequest(ChatId chatId, int messageId)
             : base("stopMessageLiveLocation")

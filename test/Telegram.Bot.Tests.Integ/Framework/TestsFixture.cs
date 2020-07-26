@@ -70,7 +70,7 @@ namespace Telegram.Bot.Tests.Integ.Framework
         )
         {
             string text = string.Format(Constants.InstructionsMessageFormat, instructions);
-            chatId = chatId ?? SupergroupChat.Id;
+            chatId ??= SupergroupChat.Id;
 
             IReplyMarkup replyMarkup = startInlineQuery
                 ? (InlineKeyboardMarkup) InlineKeyboardButton.WithSwitchInlineQueryCurrentChat("Start inline query")
@@ -85,59 +85,63 @@ namespace Telegram.Bot.Tests.Integ.Framework
             );
         }
 
-        public async Task<Message> SendTestCaseNotificationAsync(string testCase)
-        {
-            Message msg = await SendNotificationToChatAsync(false, testCase);
-            return msg;
-        }
+        public async Task<Message> SendTestCaseNotificationAsync(string testCase) =>
+            await SendNotificationToChatAsync(false, testCase);
 
         public async Task<Message> SendTestCollectionNotificationAsync(
             string collectionName,
             string instructions = default,
-            ChatId chatId = default)
-        {
-            Message msg = await SendNotificationToChatAsync(true, collectionName, instructions, chatId);
-            return msg;
-        }
+            ChatId chatId = default) =>
+            await SendNotificationToChatAsync(
+                true,
+                collectionName,
+                instructions,
+                chatId
+            );
 
-        public async Task<Chat> GetChatFromTesterAsync(ChatType chatType, CancellationToken cancellationToken = default)
+        public async Task<Chat> GetChatFromTesterAsync(
+            ChatType chatType,
+            CancellationToken cancellationToken = default)
         {
             bool IsMatch(Update u) =>
             (
-                u.Message.Chat.Type == chatType &&
+                u.Message?.Chat?.Type == chatType &&
                 u.Message.Text?.StartsWith("/test", StringComparison.OrdinalIgnoreCase) == true
             ) || (
                 ChatType.Channel == chatType &&
-                ChatType.Channel == u.Message.ForwardFromChat?.Type
+                ChatType.Channel == u.Message?.ForwardFromChat?.Type
             );
-
-            var updates = await UpdateReceiver
-                .GetUpdatesAsync(IsMatch, updateTypes: UpdateType.Message, cancellationToken: cancellationToken);
-            var update = updates.Single();
 
             await UpdateReceiver.DiscardNewUpdatesAsync(cancellationToken);
 
+            var update = await UpdateReceiver.GetUpdateAsync(
+                IsMatch,
+                updateTypes: UpdateType.Message,
+                cancellationToken: cancellationToken
+            );
+
             return chatType == ChatType.Channel
-                ? update.Message.ForwardFromChat
-                : update.Message.Chat;
+                ? update.Message?.ForwardFromChat
+                : update.Message?.Chat;
         }
 
         public async Task<Chat> GetChatFromAdminAsync()
         {
-            bool IsMatch(Update u) => (
-                u.Message.Type == MessageType.Contact ||
-                u.Message.ForwardFrom?.Id != null
-            );
+            bool IsMatch(Update u) => u.Message?.Type == MessageType.Contact ||
+                                      u.Message?.ForwardFrom?.Id != null;
 
-            var update = await UpdateReceiver
-                .GetUpdatesAsync(IsMatch, updateTypes: UpdateType.Message)
-                .ContinueWith(t => t.Result.Single());
+            var update = await UpdateReceiver.GetUpdateAsync(
+                predicate: IsMatch,
+                updateTypes: UpdateType.Message
+            );
 
             await UpdateReceiver.DiscardNewUpdatesAsync();
 
-            int userId = update.Message.Type == MessageType.Contact
-                ? update.Message.Contact.UserId
-                : update.Message.ForwardFrom.Id;
+            int? userId = update.Message?.Type == MessageType.Contact
+                ? update.Message?.Contact?.UserId
+                : update.Message?.ForwardFrom?.Id;
+
+            if (userId is null) throw new InvalidOperationException("Can't find userId");
 
             return await BotClient.GetChatAsync(userId);
         }
@@ -145,13 +149,11 @@ namespace Telegram.Bot.Tests.Integ.Framework
         private async Task InitAsync()
         {
             string apiToken = ConfigurationProvider.TestConfigurations.ApiToken;
-
-            var httpClientHandler = new RetryHttpMessageHandler(3, _diagnosticMessageSink);
-            var httpClient = new HttpClient(httpClientHandler);
+            var retryHttpClientHandler = new RetryHttpClientHandler(3, _diagnosticMessageSink);
+            var httpClient = new HttpClient(retryHttpClientHandler);
             BotClient = new TelegramBotClient(apiToken, httpClient);
             BotUser = await BotClient.GetMeAsync(CancellationToken);
             await BotClient.DeleteWebhookAsync(CancellationToken);
-
             SupergroupChat = await FindSupergroupTestChatAsync();
             var allowedUserNames = await FindAllowedTesterUserNames();
             UpdateReceiver = new UpdateReceiver(BotClient, allowedUserNames);
@@ -186,7 +188,7 @@ namespace Telegram.Bot.Tests.Integ.Framework
 
             string text = string.Format(textFormat, name);
 
-            chatId = chatId ?? SupergroupChat.Id;
+            chatId ??= SupergroupChat.Id;
             if (instructions != default)
             {
                 text += "\n\n" + string.Format(Constants.InstructionsMessageFormat, instructions);
@@ -204,18 +206,13 @@ namespace Telegram.Bot.Tests.Integ.Framework
 
         private async Task<Chat> FindSupergroupTestChatAsync()
         {
-            Chat supergroupChat;
             string supergroupChatId = ConfigurationProvider.TestConfigurations.SuperGroupChatId;
             if (string.IsNullOrWhiteSpace(supergroupChatId))
             {
-                supergroupChat = null; // ToDo Find supergroup from a message command /test
-                // await UpdateReceiver.DiscardNewUpdatesAsync(CancellationToken);
-                // supergroupChat = await GetChatFromTesterAsync(ChatType.Supergroup, CancellationToken);
+                throw new InvalidOperationException("Supergroup ID is not provided or is empty.");
             }
-            else
-            {
-                supergroupChat = await BotClient.GetChatAsync(supergroupChatId, CancellationToken);
-            }
+
+            var supergroupChat = await BotClient.GetChatAsync(supergroupChatId, CancellationToken);
 
             return supergroupChat;
         }
@@ -231,7 +228,10 @@ namespace Telegram.Bot.Tests.Integ.Framework
             if (!allowedUserNames.Any())
             {
                 // Assume all chat admins are allowed testers
-                ChatMember[] admins = await BotClient.GetChatAdministratorsAsync(SupergroupChat, CancellationToken);
+                ChatMember[] admins = await BotClient.GetChatAdministratorsAsync(
+                    SupergroupChat,
+                    CancellationToken
+                );
                 allowedUserNames = admins
                     .Where(member => !member.User.IsBot)
                     .Select(member => member.User.Username)
@@ -251,7 +251,7 @@ namespace Telegram.Bot.Tests.Integ.Framework
             bool hasContent;
             string content;
             string[] multipartContent;
-            if (e.HttpContent == null)
+            if (e.HttpContent is null)
             {
                 hasContent = false;
             }
@@ -272,15 +272,16 @@ namespace Telegram.Bot.Tests.Integ.Framework
             }
 
             /* Debugging Hint: set breakpoints with conditions here in order to investigate the HTTP request values. */
+            _ = new object();
         }
 
         // ReSharper disable UnusedVariable
-        private async void OnApiResponseReceived(object sender, ApiResponseEventArgs e)
+        private void OnApiResponseReceived(object sender, ApiResponseEventArgs e)
         {
-            string content = await e.ResponseMessage.Content.ReadAsStringAsync()
-                .ConfigureAwait(false);
+            string content = e.ResponseMessage.Content.ReadAsStringAsync().Result;
 
             /* Debugging Hint: set breakpoints with conditions here in order to investigate the HTTP response received. */
+            _ = new object();
         }
 #pragma warning restore 219
 #endif

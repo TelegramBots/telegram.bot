@@ -12,6 +12,11 @@ namespace Telegram.Bot.Types.Enums
     public enum MessageEntityType
     {
         /// <summary>
+        /// Unknown entity type
+        /// </summary>
+        Unknown,
+
+        /// <summary>
         /// A mentioned <see cref="User"/>
         /// </summary>
         Mention,
@@ -75,11 +80,6 @@ namespace Telegram.Bot.Types.Enums
         /// A cashtag (e.g. $EUR, $USD) - $ followed by the short currency code
         /// </summary>
         Cashtag,
-
-        /// <summary>
-        /// Unknown entity type
-        /// </summary>
-        Unknown,
 
         /// <summary>
         /// Underlined text

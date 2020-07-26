@@ -19,12 +19,12 @@ namespace Telegram.Bot.Types
         /// User
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public User User { get; set; }
+        public User User { get; set; } = default!;
 
         /// <summary>
         /// Score
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public int Score { get; set; }
+        public int Score { get; set; } = default!;
     }
 }

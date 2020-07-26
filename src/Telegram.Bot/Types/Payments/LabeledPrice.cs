@@ -17,7 +17,8 @@ namespace Telegram.Bot.Types.Payments
         public string Label { get; set; }
 
         /// <summary>
-        /// Price of the product in the smallest units of the <see href="https://core.telegram.org/bots/payments#supported-currencies">currency</see>.
+        /// Price of the product in the smallest units of the
+        /// <see href="https://core.telegram.org/bots/payments#supported-currencies">currency</see>.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public int Amount { get; set; }
@@ -25,7 +26,9 @@ namespace Telegram.Bot.Types.Payments
         /// <summary>
         /// Initializes an instance of <see cref="LabeledPrice"/>
         /// </summary>
-        public LabeledPrice()
+#pragma warning disable 8618
+        private LabeledPrice()
+#pragma warning restore 8618
         { }
 
         /// <summary>

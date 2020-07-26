@@ -13,31 +13,31 @@ namespace Telegram.Bot.Types
         /// Venue location
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public Location Location { get; set; }
+        public Location Location { get; set; } = default!;
 
         /// <summary>
         /// Title of the result
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string Title { get; set; }
+        public string Title { get; set; } = default!;
 
         /// <summary>
         /// Address of the venue
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public string Address { get; set; }
+        public string Address { get; set; } = default!;
 
         /// <summary>
         /// Optional. Foursquare identifier of the venue
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string FoursquareId { get; set; }
+        public string? FoursquareId { get; set; }
 
         /// <summary>
         /// Optional. Foursquare type of the venue. (For example, "arts_entertainment/default",
         /// "arts_entertainment/aquarium" or "food/icecream".)
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string FoursquareType { get; set; }
+        public string? FoursquareType { get; set; }
     }
 }

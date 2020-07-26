@@ -19,7 +19,7 @@ namespace Telegram.Bot.Tests.Integ.Payments
             : base(testsFixture, Constants.TestCollections.Payment)
         {
             PaymentProviderToken = ConfigurationProvider.TestConfigurations.PaymentProviderToken;
-            if (PaymentProviderToken == null)
+            if (PaymentProviderToken is null)
             {
                 throw new ArgumentNullException(nameof(PaymentProviderToken));
             }

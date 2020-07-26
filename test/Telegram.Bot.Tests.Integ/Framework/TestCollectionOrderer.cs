@@ -40,7 +40,6 @@ namespace Telegram.Bot.Tests.Integ.Framework
             Constants.TestCollections.SendPhotoMessage,
             Constants.TestCollections.SendVideoMessage,
             Constants.TestCollections.AlbumMessage,
-            Constants.TestCollections.ObsoleteSendMediaGroup,
             Constants.TestCollections.ReplyMarkup,
             Constants.TestCollections.LiveLocation,
             Constants.TestCollections.FileDownload,

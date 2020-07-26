@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.IO;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -18,7 +18,7 @@ namespace Telegram.Bot.Types.InputFiles
         /// Id of a file that exists on Telegram servers
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string FileId { get; protected set; }
+        public string? FileId { get; protected set; }
 
         /// <inheritdoc cref="IInputFile.FileType"/>
         public override FileType FileType
@@ -32,25 +32,18 @@ namespace Telegram.Bot.Types.InputFiles
         }
 
         /// <summary>
-        /// ToDo
+        /// Constructs a new instance of <see cref="InputTelegramFile"/>
         /// </summary>
         protected InputTelegramFile()
         { }
 
         /// <summary>
-        /// Constructs an <see cref="InputTelegramFile"/> from a <see cref="Stream"/>
-        /// </summary>
-        /// <param name="content"><see cref="Stream"/> containing the file</param>
-        public InputTelegramFile(Stream content)
-            : this(content, default)
-        { }
-
-        /// <summary>
-        /// Constructs an <see cref="InputTelegramFile"/> from a <see cref="Stream"/> and a file name
+        /// Constructs an <see cref="InputTelegramFile"/> from a <see cref="Stream"/> and
+        /// a file name
         /// </summary>
         /// <param name="content"><see cref="Stream"/> containing the file</param>
         /// <param name="fileName">Name of the file</param>
-        public InputTelegramFile(Stream content, string fileName)
+        public InputTelegramFile(Stream content, string? fileName = default)
         {
             Content = content;
             FileName = fileName;
@@ -66,20 +59,32 @@ namespace Telegram.Bot.Types.InputFiles
         }
 
         /// <summary>
-        /// ToDo
+        /// Performs an implicit conversion from <see cref="Stream"/> to
+        /// <see cref="InputOnlineFile"/>
         /// </summary>
-        /// <param name="stream"></param>
-        public static implicit operator InputTelegramFile(Stream stream) =>
-            stream == null
+        /// <param name="stream">
+        /// <see cref="Stream"/> instance to be converted to <see cref="InputOnlineFile"/>
+        /// </param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator InputTelegramFile?(Stream stream) =>
+            stream is null
                 ? default
                 : new InputTelegramFile(stream);
 
         /// <summary>
-        /// ToDo
+        /// Performs an implicit conversion from a FileId or a URL to
+        /// <see cref="InputOnlineFile"/>
         /// </summary>
-        /// <param name="fileId"></param>
-        public static implicit operator InputTelegramFile(string fileId) =>
-            fileId == null
+        /// <param name="fileId">
+        /// FileId to be converted to <see cref="InputOnlineFile"/>
+        /// </param>
+        /// <returns>
+        /// The result of the conversion.
+        /// </returns>
+        public static implicit operator InputTelegramFile?(string fileId) =>
+            fileId is null
                 ? default
                 : new InputTelegramFile(fileId);
     }

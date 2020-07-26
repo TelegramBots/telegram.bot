@@ -7,13 +7,14 @@ using Telegram.Bot.Types;
 namespace Telegram.Bot.Requests
 {
     /// <summary>
-    /// Use this method to change the list of the bot's commands. Returns True on success.
+    /// Use this method to change the list of the bot's commands. Returns <c>true</c> on success.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
     public class SetMyCommandsRequest : RequestBase<bool>
     {
         /// <summary>
-        /// A list of bot commands to be set as the list of the bot's commands. At most 100 commands can be specified.
+        /// A list of bot commands to be set as the list of the bot's commands. At most 100
+        /// <see cref="BotCommand"/>s can be specified.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public IEnumerable<BotCommand> Commands { get; }

@@ -13,12 +13,13 @@ namespace Telegram.Bot.Types
         /// The group has been migrated to a supergroup with the specified identifier.
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public long MigrateToChatId { get; set; }
+        public long? MigrateToChatId { get; set; }
 
         /// <summary>
-        /// In case of exceeding flood control, the number of seconds left to wait before the request can be repeated.
+        /// In case of exceeding flood control, the number of seconds left to wait before the
+        /// request can be repeated.
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int RetryAfter { get; set; }
+        public int? RetryAfter { get; set; }
     }
 }

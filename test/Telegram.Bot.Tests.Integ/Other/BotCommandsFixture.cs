@@ -25,7 +25,7 @@ namespace Telegram.Bot.Tests.Integ.Other
         public async Task DisposeAsync()
         {
             // restore original bot commands
-            if (_originalCommands?.Length != 0)
+            if (_originalCommands != null && _originalCommands.Length != 0)
             {
                 await TestsFixture.BotClient.SetMyCommandsAsync(_originalCommands);
             }

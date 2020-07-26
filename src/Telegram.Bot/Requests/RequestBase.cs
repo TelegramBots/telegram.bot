@@ -44,24 +44,21 @@ namespace Telegram.Bot.Requests
         /// Generate content of HTTP message
         /// </summary>
         /// <returns>Content of HTTP request</returns>
-        public virtual HttpContent ToHttpContent()
+        public virtual HttpContent? ToHttpContent()
         {
             string payload = JsonConvert.SerializeObject(this);
             return new StringContent(payload, Encoding.UTF8, "application/json");
         }
 
-        /// <summary>
-        /// Allows this object to be used as a response in webhooks
-        /// </summary>
+        /// <inheritdoc />
         [JsonIgnore]
         public bool IsWebhookResponse { get; set; }
 
         /// <summary>
-        /// If <see cref="IsWebhookResponse"/> is set to <see langword="true"/> is set to the method
-        /// name, otherwise it won't be serialized
+        /// If <see cref="IsWebhookResponse"/> is set to <see langword="true"/> is set to
+        /// the method name, otherwise it won't be serialized
         /// </summary>
-
         [JsonProperty("method", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        internal string WebHookMethodName => IsWebhookResponse ? MethodName : default;
+        internal string? WebHookMethodName => IsWebhookResponse ? MethodName : default;
     }
 }

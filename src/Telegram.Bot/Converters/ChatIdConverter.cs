@@ -21,7 +21,10 @@ namespace Telegram.Bot.Converters
             }
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(
+            JsonReader reader,
+            Type objectType,
+            object existingValue, JsonSerializer serializer)
         {
             var value = JToken.ReadFrom(reader).Value<string>();
 

@@ -61,7 +61,8 @@ namespace Telegram.Bot.Tests.Integ.Framework.XunitExtensions
                     if (parameters.Length > 1)
                     {
                         throw new InvalidOperationException(
-                            $"Assembly fixture constructor can only have a single parameter of type {nameof(IMessageSink)}"
+                            "Assembly fixture constructor can only have a single " +
+                            $"parameter of type {nameof(IMessageSink)}"
                         );
                     }
 
@@ -69,7 +70,8 @@ namespace Telegram.Bot.Tests.Integ.Framework.XunitExtensions
                     if (parameter?.ParameterType != typeof(IMessageSink))
                     {
                         throw new InvalidOperationException(
-                            $"Assembly fixture constructor can only have a parameter of type {nameof(IMessageSink)}"
+                            "Assembly fixture constructor can only have a parameter of " +
+                            $"type {nameof(IMessageSink)}"
                         );
                     }
 

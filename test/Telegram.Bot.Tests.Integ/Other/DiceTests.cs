@@ -21,7 +21,7 @@ namespace Telegram.Bot.Tests.Integ.Other
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.SendDice)]
         public async Task Should_Send_A_Die()
         {
-            Message message = await _testsFixture.BotClient.SendDiceAsync(_testsFixture.SupergroupChat);
+            Message message = await _testsFixture.BotClient.SendDiceAsync(chatId: _testsFixture.SupergroupChat);
 
             Assert.Equal(MessageType.Dice, message.Type);
             Assert.NotNull(message.Dice);
@@ -34,7 +34,7 @@ namespace Telegram.Bot.Tests.Integ.Other
         public async Task Should_Send_A_Dart()
         {
             Message message = await _testsFixture.BotClient.SendDiceAsync(
-                _testsFixture.SupergroupChat,
+                chatId: _testsFixture.SupergroupChat,
                 emoji: Emoji.Darts
             );
 
@@ -49,7 +49,7 @@ namespace Telegram.Bot.Tests.Integ.Other
         public async Task Should_Send_A_Basketball()
         {
             Message message = await _testsFixture.BotClient.SendDiceAsync(
-                _testsFixture.SupergroupChat,
+                chatId: _testsFixture.SupergroupChat,
                 emoji: Emoji.Basketball
             );
 

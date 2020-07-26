@@ -65,6 +65,7 @@ namespace Telegram.Bot.Tests.Unit.Serialization
             var message = JsonConvert.DeserializeObject<Message>(json);
 
             Assert.Equal(MessageType.Photo, message.Type);
+            Assert.NotNull(message.Photo);
             Assert.NotEmpty(message.Photo);
             Assert.All(message.Photo.Select(ps => ps.FileId), Assert.NotEmpty);
             Assert.All(message.Photo.Select(ps => ps.Width), w => Assert.NotEqual(default, w));

@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Telegram.Bot.Tests.Integ.Framework;
@@ -31,28 +32,28 @@ namespace Telegram.Bot.Tests.Integ.Locations
             _classFixture = classFixture;
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldSendLiveLocation)]
+        [OrderedFact("Should send a location with live period to update")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.SendLocation)]
         public async Task Should_Send_Live_Location()
         {
-            const float latBerlin = 52.5200f;
-            const float lonBerlin = 13.4050f;
+            double latitudeBerlin = 52.5200f;
+            double longitudeBerlin = 13.4050f;
 
             Message message = await BotClient.SendLocationAsync(
                 chatId: _fixture.SupergroupChat.Id,
-                latitude: latBerlin,
-                longitude: lonBerlin,
+                latitude: latitudeBerlin,
+                longitude: longitudeBerlin,
                 livePeriod: 60
             );
 
             Assert.Equal(MessageType.Location, message.Type);
-            Assert.Equal(latBerlin, message.Location.Latitude, 3);
-            Assert.Equal(lonBerlin, message.Location.Longitude, 3);
+            Assert.Equal(latitudeBerlin, message.Location!.Latitude, 3);
+            Assert.Equal(longitudeBerlin, message.Location.Longitude, 3);
 
             LocationMessage = message;
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldUpdateLocation)]
+        [OrderedFact("Should update live location 3 times")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.EditMessageLiveLocation)]
         public async Task Should_Update_Live_Location()
         {
@@ -65,10 +66,10 @@ namespace Telegram.Bot.Tests.Integ.Locations
             Message editedMessage = default;
             foreach (Location newLocation in locations)
             {
-                await Task.Delay(1_500);
+                await Task.Delay(TimeSpan.FromSeconds(1.5));
 
                 editedMessage = await BotClient.EditMessageLiveLocationAsync(
-                    chatId: LocationMessage.Chat.Id,
+                    chatId: LocationMessage.Chat!.Id,
                     messageId: LocationMessage.MessageId,
                     latitude: newLocation.Latitude,
                     longitude: newLocation.Longitude
@@ -76,36 +77,28 @@ namespace Telegram.Bot.Tests.Integ.Locations
 
                 Assert.Equal(MessageType.Location, editedMessage.Type);
                 Assert.Equal(LocationMessage.MessageId, editedMessage.MessageId);
-                Assert.Equal(newLocation.Latitude, editedMessage.Location.Latitude, 3);
+                Assert.Equal(newLocation.Latitude, editedMessage.Location!.Latitude, 3);
                 Assert.Equal(newLocation.Longitude, editedMessage.Location.Longitude, 3);
             }
 
             LocationMessage = editedMessage;
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldStopMessageLiveLocation)]
+        [OrderedFact("Should stop live locations")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.StopMessageLiveLocation)]
         public async Task Should_Stop_Live_Location()
         {
             Message message = await BotClient.StopMessageLiveLocationAsync(
-                chatId: LocationMessage.Chat,
+                chatId: LocationMessage.Chat!,
                 messageId: LocationMessage.MessageId
             );
 
             LocationMessage.Date = message.Date;
             LocationMessage.EditDate = message.EditDate;
             Assert.True(JToken.DeepEquals(
-                JToken.FromObject(LocationMessage), JToken.FromObject(message)
+                JToken.FromObject(LocationMessage),
+                JToken.FromObject(message)
             ));
-        }
-
-        private static class FactTitles
-        {
-            public const string ShouldSendLiveLocation = "Should send a location with live period to update";
-
-            public const string ShouldUpdateLocation = "Should update live location 3 times";
-
-            public const string ShouldStopMessageLiveLocation = "Should stop live locations";
         }
     }
 }

@@ -53,15 +53,22 @@ namespace Telegram.Bot.Tests.Integ.Framework
             }
         }
 
+        public async Task<Update> GetUpdateAsync(
+            Func<Update, bool> predicate = default,
+            int offset = default,
+            CancellationToken cancellationToken = default,
+            params UpdateType[] updateTypes) =>
+            (await GetUpdatesAsync(predicate, offset, cancellationToken, updateTypes))
+            .First();
+
         public async Task<Update[]> GetUpdatesAsync(
             Func<Update, bool> predicate = default,
             int offset = default,
             CancellationToken cancellationToken = default,
-            params UpdateType[] updateTypes
-        )
+            params UpdateType[] updateTypes)
         {
             CancellationTokenSource cts = default;
-            predicate = predicate ?? PassthroughPredicate;
+            predicate ??= PassthroughPredicate;
 
             try
             {
@@ -105,12 +112,11 @@ namespace Telegram.Bot.Tests.Integ.Framework
             int messageId = default,
             string data = default,
             bool discardNewUpdates = true,
-            CancellationToken cancellationToken = default
-        )
+            CancellationToken cancellationToken = default)
         {
             Func<Update, bool> predicate = u =>
-                (messageId == default || u.CallbackQuery.Message.MessageId == messageId) &&
-                (data == default || u.CallbackQuery.Data == data);
+                (messageId == default || u.CallbackQuery!.Message!.MessageId == messageId) &&
+                (data == default || u.CallbackQuery!.Data == data);
 
             var updates = await GetUpdatesAsync(predicate,
                 cancellationToken: cancellationToken,
@@ -125,8 +131,7 @@ namespace Telegram.Bot.Tests.Integ.Framework
 
         public async Task<Update> GetInlineQueryUpdateAsync(
             bool discardNewUpdates = true,
-            CancellationToken cancellationToken = default
-        )
+            CancellationToken cancellationToken = default)
         {
             var updates = await GetUpdatesAsync(
                 cancellationToken: cancellationToken,
@@ -140,29 +145,33 @@ namespace Telegram.Bot.Tests.Integ.Framework
         }
 
         /// <summary>
-        /// Receive the chosen inline query result and the message that was sent to chat. Use this method only after bot answers to an inline query.
+        /// Receive the chosen inline query result and the message that was sent to chat. Use this
+        /// method only after bot answers to an inline query.
         /// </summary>
-        /// <param name="messageType">Type of message for chosen inline query e.g. Text message for article results</param>
+        /// <param name="messageType">
+        /// Type of message for chosen inline query e.g. Text message for article results
+        /// </param>
         /// <param name="cancellationToken"></param>
-        /// <returns>Message update generated for chosen result, and the update for chosen inline query result</returns>
+        /// <returns>
+        /// Message update generated for chosen result, and the update for chosen inline query result
+        /// </returns>
         public async Task<(Update MessageUpdate, Update ChosenResultUpdate)> GetInlineQueryResultUpdates(
             MessageType messageType,
-            CancellationToken cancellationToken = default
-        )
+            CancellationToken cancellationToken = default)
         {
             Update messageUpdate = default;
             Update chosenResultUpdate = default;
 
             while (
                 !cancellationToken.IsCancellationRequested &&
-                (messageUpdate == null || chosenResultUpdate == null)
+                (messageUpdate is null || chosenResultUpdate is null)
             )
             {
                 await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
                 var updates = await GetUpdatesAsync(
                     u => u.Message?.Type == messageType || u.ChosenInlineResult != null,
                     cancellationToken: cancellationToken,
-                    updateTypes: new[] {UpdateType.Message, UpdateType.ChosenInlineResult}
+                    updateTypes: new [] { UpdateType.Message, UpdateType.ChosenInlineResult }
                 );
 
                 messageUpdate = updates.SingleOrDefault(u => u.Message?.Type == messageType);
@@ -175,8 +184,7 @@ namespace Telegram.Bot.Tests.Integ.Framework
         private async Task<Update[]> GetOnlyAllowedUpdatesAsync(
             int offset,
             CancellationToken cancellationToken,
-            params UpdateType[] types
-        )
+            params UpdateType[] types)
         {
             var updates = await _botClient.GetUpdatesAsync(
                 offset,

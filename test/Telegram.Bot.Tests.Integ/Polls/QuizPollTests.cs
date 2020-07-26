@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Telegram.Bot.Tests.Integ.Framework;
 using Telegram.Bot.Types;
@@ -22,9 +21,7 @@ namespace Telegram.Bot.Tests.Integ.Polls
             _classFixture = classFixture;
         }
 
-        [OrderedFact(
-            "Should send public quiz poll",
-            Skip = "Poll tests fail too often for unknown reasons")]
+        [OrderedFact("Should send public quiz poll")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.SendPoll)]
         public async Task Should_Send_Public_Quiz_Poll()
         {
@@ -40,7 +37,7 @@ namespace Telegram.Bot.Tests.Integ.Polls
             );
 
             Assert.Equal(MessageType.Poll, message.Type);
-            Assert.NotEmpty(message.Poll.Id);
+            Assert.NotEmpty(message.Poll!.Id);
             Assert.False(message.Poll.IsClosed);
             Assert.False(message.Poll.IsAnonymous);
             Assert.Equal("quiz", message.Poll.Type);
@@ -49,13 +46,17 @@ namespace Telegram.Bot.Tests.Integ.Polls
             Assert.Null(message.Poll.OpenPeriod);
             Assert.Null(message.Poll.CloseDate);
 
-            Assert.Equal("How many silmarils were made in J. R. R. Tolkiens's Silmarillion?", message.Poll.Question);
+            Assert.Equal(
+                "How many silmarils were made in J. R. R. Tolkiens's Silmarillion?",
+                message.Poll.Question
+            );
             Assert.Equal(3, message.Poll.Options.Length);
             Assert.Equal("One", message.Poll.Options[0].Text);
             Assert.Equal("Ten", message.Poll.Options[1].Text);
             Assert.Equal("Three", message.Poll.Options[2].Text);
             Assert.All(message.Poll.Options, option => Assert.Equal(0, option.VoterCount));
             Assert.Equal("Three silmarils were made", message.Poll.Explanation);
+            Assert.NotNull(message.Poll.ExplanationEntities);
             Assert.Single(message.Poll.ExplanationEntities);
             Assert.Contains(
                 message.Poll.ExplanationEntities,
@@ -66,9 +67,7 @@ namespace Telegram.Bot.Tests.Integ.Polls
             _classFixture.OriginalPollMessage = message;
         }
 
-        [OrderedFact(
-            "Should receive a poll answer update",
-            Skip = "Poll tests fail too often for unknown reasons")]
+        [OrderedFact("Should receive a poll answer update")]
         public async Task Should_Receive_Poll_Answer_Update()
         {
             await Fixture.SendTestInstructionsAsync(
@@ -77,15 +76,15 @@ namespace Telegram.Bot.Tests.Integ.Polls
 
             Poll poll = _classFixture.OriginalPollMessage.Poll;
 
-            Update pollAnswerUpdates = (await Fixture.UpdateReceiver.GetUpdatesAsync(
-                update => update.PollAnswer.OptionIds.Length == 1 &&
-                          update.PollAnswer.PollId == poll.Id,
+            Update pollAnswerUpdates = await Fixture.UpdateReceiver.GetUpdateAsync(
+                update => update.PollAnswer!.OptionIds.Length == 1 &&
+                          update.PollAnswer.PollId == poll!.Id,
                 updateTypes: UpdateType.PollAnswer
-            )).Last();
+            );
 
             PollAnswer pollAnswer = pollAnswerUpdates.PollAnswer;
 
-            Assert.Equal(poll.Id, pollAnswer.PollId);
+            Assert.Equal(poll!.Id, pollAnswer!.PollId);
             Assert.NotNull(pollAnswer.User);
             Assert.All(
                 pollAnswer.OptionIds,
@@ -95,9 +94,7 @@ namespace Telegram.Bot.Tests.Integ.Polls
             _classFixture.PollAnswer = pollAnswer;
         }
 
-        [OrderedFact(
-            "Should stop quiz poll",
-            Skip = "Poll tests fail too often for unknown reasons")]
+        [OrderedFact("Should stop quiz poll")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.StopPoll)]
         public async Task Should_Stop_Quiz_Poll()
         {
@@ -106,11 +103,11 @@ namespace Telegram.Bot.Tests.Integ.Polls
             await Task.Delay(TimeSpan.FromSeconds(5));
 
             Poll closedPoll = await BotClient.StopPollAsync(
-                chatId: _classFixture.OriginalPollMessage.Chat,
+                chatId: _classFixture.OriginalPollMessage.Chat!,
                 messageId: _classFixture.OriginalPollMessage.MessageId
             );
 
-            Assert.Equal(_classFixture.OriginalPollMessage.Poll.Id, closedPoll.Id);
+            Assert.Equal(_classFixture.OriginalPollMessage.Poll!.Id, closedPoll.Id);
             Assert.True(closedPoll.IsClosed);
 
             PollAnswer pollAnswer = _classFixture.PollAnswer;

@@ -14,13 +14,11 @@ namespace Telegram.Bot.Requests
     /// Send .webp stickers. On success, the sent <see cref="Message"/> is returned.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class SendStickerRequest : FileRequestBase<Message>,
-                                      INotifiableMessage,
-                                      IReplyMessage,
-                                      IReplyMarkupMessage<IReplyMarkup>
+    public class SendStickerRequest : FileRequestBase<Message>, IChatTargetable
     {
         /// <summary>
-        /// Unique identifier for the target chat or username of the target channel (in the format @channelusername)
+        /// Unique identifier for the target chat or username of the target channel
+        /// (in the format @channelusername)
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public ChatId ChatId { get; }
@@ -31,17 +29,24 @@ namespace Telegram.Bot.Requests
         [JsonProperty(Required = Required.Always)]
         public InputOnlineFile Sticker { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Sends the message silently. Users will receive a notification with no sound.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public bool DisableNotification { get; set; }
+        public bool? DisableNotification { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// If the message is a reply, ID of the original message.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int ReplyToMessageId { get; set; }
+        public int? ReplyToMessageId { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// A JSON-serialized object for a custom reply keyboard,
+        /// instructions to hide keyboard or to force a reply from the user.
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public IReplyMarkup ReplyMarkup { get; set; }
+        public IReplyMarkup? ReplyMarkup { get; set; }
 
         /// <summary>
         /// Initializes a new request chatId and sticker
@@ -54,7 +59,7 @@ namespace Telegram.Bot.Requests
         }
 
         /// <inheritdoc />
-        public override HttpContent ToHttpContent() =>
+        public override HttpContent? ToHttpContent() =>
             Sticker.FileType == FileType.Stream
                 ? ToMultipartFormDataContent("sticker", Sticker)
                 : base.ToHttpContent();

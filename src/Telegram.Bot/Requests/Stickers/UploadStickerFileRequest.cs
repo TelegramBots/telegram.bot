@@ -1,6 +1,7 @@
 ﻿using System.Net.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Telegram.Bot.Requests.Abstractions;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.InputFiles;
 using File = Telegram.Bot.Types.File;
@@ -9,10 +10,12 @@ using File = Telegram.Bot.Types.File;
 namespace Telegram.Bot.Requests
 {
     /// <summary>
-    /// Upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet methods (can be used multiple times). Returns the uploaded <see cref="File"/> on success.
+    /// Upload a .png file with a sticker for later use in <see cref="CreateNewStickerSetRequest"/>
+    /// and <see cref="AddStickerToSetRequest"/> requests (can be used multiple times).
+    /// Returns the uploaded <see cref="File"/> on success.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class UploadStickerFileRequest : FileRequestBase<File>
+    public class UploadStickerFileRequest : FileRequestBase<File>, IUserTargetable
     {
         /// <summary>
         /// User identifier of sticker file owner
@@ -21,7 +24,8 @@ namespace Telegram.Bot.Requests
         public int UserId { get; }
 
         /// <summary>
-        /// Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not exceed 512px, and either width or height must be exactly 512px.
+        /// Png image with the sticker, must be up to 512 kilobytes in size, dimensions must not
+        /// exceed 512px, and either width or height must be exactly 512px.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public InputFileStream PngSticker { get; }
@@ -37,7 +41,7 @@ namespace Telegram.Bot.Requests
         }
 
         /// <inheritdoc />
-        public override HttpContent ToHttpContent() =>
+        public override HttpContent? ToHttpContent() =>
             PngSticker.FileType == FileType.Stream
                 ? ToMultipartFormDataContent("png_sticker", PngSticker)
                 : base.ToHttpContent();

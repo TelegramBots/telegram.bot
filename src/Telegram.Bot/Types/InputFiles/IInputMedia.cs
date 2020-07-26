@@ -1,4 +1,4 @@
-﻿using Telegram.Bot.Types.Enums;
+using Telegram.Bot.Types.Enums;
 
 // ReSharper disable once CheckNamespace
 namespace Telegram.Bot.Types
@@ -21,11 +21,12 @@ namespace Telegram.Bot.Types
         /// <summary>
         /// Optional. Caption of the photo to be sent, 0-1024 characters
         /// </summary>
-        string Caption { get; }
+        string? Caption { get; }
 
         /// <summary>
-        /// Change, if you want Telegram apps to show bold, italic, fixed-width text or inline URLs in a caption
+        /// Change, if you want Telegram apps to show bold, italic, fixed-width text or inline
+        /// URLs in a caption
         /// </summary>
-        ParseMode ParseMode { get; }
+        ParseMode? ParseMode { get; }
     }
 }

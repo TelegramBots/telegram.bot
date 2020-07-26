@@ -13,24 +13,24 @@ namespace Telegram.Bot.Types.Payments
         /// Optional. User name
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Optional. User's phone number
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string PhoneNumber { get; set; }
+        public string? PhoneNumber { get; set; }
 
         /// <summary>
         /// Optional. User email
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Email { get; set; }
+        public string? Email { get; set; }
 
         /// <summary>
         /// Optional. User shipping address
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public ShippingAddress ShippingAddress { get; set; }
+        public ShippingAddress? ShippingAddress { get; set; }
     }
 }

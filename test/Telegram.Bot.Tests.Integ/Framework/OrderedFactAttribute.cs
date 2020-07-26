@@ -7,8 +7,9 @@ using Xunit.Sdk;
 namespace Telegram.Bot.Tests.Integ.Framework
 {
     /// <summary>
-    /// Attribute that is applied to a test method. Test methods in a collection will be executed in order based on their line number.
-    /// By defalut, test cases will rerun once if test method throws a <see cref="TaskCanceledException"/>.
+    /// Attribute that is applied to a test method. Test methods in a collection will be executed in
+    /// order based on their line number. By defalut, test cases will rerun once if test method
+    /// throws a <see cref="TaskCanceledException"/>.
     /// </summary>
     [XunitTestCaseDiscoverer(Constants.TestCaseDiscoverer, Constants.AssemblyName)]
     public class OrderedFactAttribute : FactAttribute
@@ -19,7 +20,8 @@ namespace Telegram.Bot.Tests.Integ.Framework
         public readonly int LineNumber;
 
         /// <summary>
-        /// Number of test case retry attempts after test case is ran once. Assign 0 to disable test case retry.
+        /// Number of test case retry attempts after test case is ran once. Assign 0 to disable test
+        /// case retry.
         /// </summary>
         public int MaxRetries
         {
@@ -55,7 +57,7 @@ namespace Telegram.Bot.Tests.Integ.Framework
             get => _exceptionType;
             set
             {
-                if (value == null)
+                if (value is null)
                     throw new ArgumentNullException(nameof(ExceptionType));
                 if (!(value == typeof(Exception) || value.IsSubclassOf(typeof(Exception))))
                     throw new ArgumentException("Type should be an Exception", nameof(ExceptionType));
@@ -74,32 +76,12 @@ namespace Telegram.Bot.Tests.Integ.Framework
         private Type _exceptionType;
 
         /// <summary>
-        /// Initializes an instance of <see cref="OrderedFactAttribute"/> with 1 retry attempt and delay of 30 seconds if a <see cref="TaskCanceledException"/> is thrown.
-        /// </summary>
-        /// <param name="line">Line number in source file.</param>
-        [Obsolete]
-        public OrderedFactAttribute(
-            [CallerLineNumber] int line = default
-        )
-        {
-            if (line < 1)
-                throw new ArgumentOutOfRangeException(nameof(line));
-
-            LineNumber = line;
-            MaxRetries = 1;
-            DelaySeconds = 60;
-            ExceptionType = typeof(TaskCanceledException);
-        }
-
-        /// <summary>
-        /// Initializes an instance of <see cref="OrderedFactAttribute"/> with 1 retry attempt and delay of 30 seconds if a <see cref="TaskCanceledException"/> is thrown.
+        /// Initializes an instance of <see cref="OrderedFactAttribute"/> with 1 retry attempt and
+        /// delay of 30 seconds if a <see cref="TaskCanceledException"/> is thrown.
         /// </summary>
         /// <param name="description">Description of test case.</param>
         /// <param name="line">Line number in source file.</param>
-        public OrderedFactAttribute(
-            string description,
-            [CallerLineNumber] int line = default
-        )
+        public OrderedFactAttribute(string description, [CallerLineNumber] int line = default)
         {
             if (line < 1)
                 throw new ArgumentOutOfRangeException(nameof(line));

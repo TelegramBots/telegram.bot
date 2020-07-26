@@ -1,15 +1,15 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using Telegram.Bot.Types.InlineQueryResults.Abstractions;
 
 namespace Telegram.Bot.Types.InlineQueryResults
 {
     /// <summary>
-    /// Represents a link to a sticker stored on the Telegram servers. By default, this sticker will be sent by the user. Alternatively, you can use input_message_content to send a message with the specified content instead of the sticker.
+    /// Represents a link to a sticker stored on the Telegram servers. By default, this sticker
+    /// will be sent by the user. Alternatively, you can use <see cref="InputMessageContent"/>
+    /// to send a message with the specified content instead of the sticker.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class InlineQueryResultCachedSticker : InlineQueryResultBase,
-                                                  IInputMessageContentResult
+    public class InlineQueryResultCachedSticker : InlineQueryResultBase
     {
         /// <summary>
         /// A valid file identifier of the sticker
@@ -17,11 +17,15 @@ namespace Telegram.Bot.Types.InlineQueryResults
         [JsonProperty(Required = Required.Always)]
         public string StickerFileId { get; set; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Content of the message to be sent
+        /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public InputMessageContentBase InputMessageContent { get; set; }
+        public InputMessageContentBase? InputMessageContent { get; set; }
 
+#pragma warning disable 8618
         private InlineQueryResultCachedSticker()
+#pragma warning restore 8618
             : base(InlineQueryResultType.Sticker)
         { }
 

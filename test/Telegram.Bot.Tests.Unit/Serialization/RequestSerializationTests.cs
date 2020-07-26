@@ -1,6 +1,8 @@
+using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Telegram.Bot.Requests;
+using Telegram.Bot.Types;
 using Xunit;
 
 namespace Telegram.Bot.Tests.Unit.Serialization
@@ -49,6 +51,20 @@ namespace Telegram.Bot.Tests.Unit.Serialization
             Assert.DoesNotContain(@"""is_webhook_response""", serializeRequest);
             Assert.Contains(@"""offset"":12345", serializeRequest);
             Assert.DoesNotContain(@"""allowed_updates""", serializeRequest);
+        }
+
+        [Fact]
+        public void Should_Properly_Serialize_RestrictChatMemberRequest()
+        {
+            var request = new RestrictChatMemberRequest(
+                -100123456789, 123456789, new ChatPermissions())
+            {
+                UntilDate = new DateTime(2020, 1, 1, 1, 1, 1, DateTimeKind.Utc)
+            };
+
+            string serializeRequest = JsonConvert.SerializeObject(request);
+
+            Assert.Contains(@"""until_date"":1577840461", serializeRequest);
         }
     }
 }

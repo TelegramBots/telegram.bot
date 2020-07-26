@@ -1,6 +1,6 @@
 using System;
-using System.Net.Http;
 using System.Threading.Tasks;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Tests.Integ.Framework;
 using Telegram.Bot.Types;
 using Xunit;
@@ -29,27 +29,28 @@ namespace Telegram.Bot.Tests.Integ.Getting_Updates
             Assert.True(result);
         }
 
-        [OrderedFact(
-            "Should throw HttpRequestException with \"404 (Not Found)\" error when malformed API Token is provided"
-        )]
+        [OrderedFact("Should throw ApiRequestException with \"Not Found\" error when" +
+                     " malformed API Token is provided")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.GetMe)]
         public async Task Should_Fail_Test_Api_Token()
         {
-            ITelegramBotClient botClient = new TelegramBotClient("0:1this_is_an-invalid-token_for_tests");
+            string botToken = "0:1this_is_an-invalid-token_for_tests";
+            ITelegramBotClient botClient = new TelegramBotClient(botToken);
 
-            Exception exception = await Assert.ThrowsAnyAsync<Exception>(() =>
-                botClient.TestApiAsync()
+            ApiRequestException exception = await Assert.ThrowsAsync<ApiRequestException>(
+                async () => await botClient.TestApiAsync()
             );
 
-            Assert.Equal("Response status code does not indicate success: 404 (Not Found).", exception.Message);
-            Assert.IsType<HttpRequestException>(exception);
+            Assert.Equal(404, exception.ErrorCode);
+            Assert.Equal("Not Found", exception.Message);
         }
 
         [OrderedFact("Should fail API Token test with invalid token")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.GetMe)]
         public async Task Should_Test_Bad_BotToken()
         {
-            ITelegramBotClient botClient = new TelegramBotClient("123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11");
+            string botToken = "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11";
+            ITelegramBotClient botClient = new TelegramBotClient(botToken);
             bool result = await botClient.TestApiAsync();
 
             Assert.False(result);
@@ -63,7 +64,7 @@ namespace Telegram.Bot.Tests.Integ.Getting_Updates
 
             Assert.NotNull(botUser);
             Assert.True(botUser.IsBot);
-            Assert.EndsWith("bot", botUser.Username, StringComparison.OrdinalIgnoreCase);
+            Assert.EndsWith("bot", botUser.Username!, StringComparison.OrdinalIgnoreCase);
         }
     }
 }

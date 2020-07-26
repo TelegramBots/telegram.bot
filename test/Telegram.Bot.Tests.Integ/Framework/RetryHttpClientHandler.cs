@@ -10,12 +10,12 @@ using Xunit.Sdk;
 
 namespace Telegram.Bot.Tests.Integ.Framework
 {
-    internal class RetryHttpMessageHandler : HttpClientHandler
+    internal class RetryHttpClientHandler : HttpClientHandler
     {
         private readonly int _retryCount;
         private readonly IMessageSink _diagnosticMessageSink;
 
-        internal RetryHttpMessageHandler(int retryCount, IMessageSink diagnosticMessageSink)
+        internal RetryHttpClientHandler(int retryCount, IMessageSink diagnosticMessageSink)
         {
             _retryCount = retryCount;
             _diagnosticMessageSink = diagnosticMessageSink;
@@ -47,12 +47,17 @@ namespace Telegram.Bot.Tests.Integ.Framework
                 if (apiResponse.Parameters != null)
                 {
                     var seconds = apiResponse.Parameters.RetryAfter;
+                    // 30 seconds are chosen because it's a an average amount of that has
+                    // been seen in integration tests
+                    int effectiveSeconds = seconds ?? 30;
 
                     _diagnosticMessageSink.OnMessage(
-                        new DiagnosticMessage($"Retry attempt {i + 1}. Waiting for {seconds} seconds before retrying.")
+                        new DiagnosticMessage(
+                            $"Retry attempt {i + 1}. Waiting for {effectiveSeconds} seconds before retrying."
+                        )
                     );
 
-                    var timeToWait = TimeSpan.FromSeconds(seconds);
+                    var timeToWait = TimeSpan.FromSeconds(effectiveSeconds);
                     await Task.Delay(timeToWait, cancellationToken);
                 }
             }

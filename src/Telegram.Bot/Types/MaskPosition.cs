@@ -11,27 +11,32 @@ namespace Telegram.Bot.Types
     public class MaskPosition
     {
         /// <summary>
-        /// The part of the face relative to which the mask should be placed. One of “forehead”, “eyes”, “mouth”, or “chin”.
+        /// The part of the face relative to which the mask should be placed. One of
+        /// <see cref="MaskPositionPoint.Forehead"/>, <see cref="MaskPositionPoint.Eyes"/>,
+        /// <see cref="MaskPositionPoint.Mouth"/>, or <see cref="MaskPositionPoint.Chin"/>.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
         public MaskPositionPoint Point { get; set; }
 
         /// <summary>
-        /// Shift by X-axis measured in widths of the mask scaled to the face size, from left to right. For example, choosing -1.0 will place mask just to the left of the default mask position.
+        /// Shift by X-axis measured in widths of the mask scaled to the face size, from left to
+        /// right. For example, choosing -1.0 will place mask just to the left of the default mask
+        /// position.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public float XShift { get; set; }
+        public double XShift { get; set; }
 
         /// <summary>
-        /// Shift by Y-axis measured in heights of the mask scaled to the face size, from top to bottom. For example, 1.0 will place the mask just below the default mask position.
+        /// Shift by Y-axis measured in heights of the mask scaled to the face size, from top to
+        /// bottom. For example, 1.0 will place the mask just below the default mask position.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public float YShift { get; set; }
+        public double YShift { get; set; }
 
         /// <summary>
         /// Mask scaling coefficient. For example, 2.0 means double size.
         /// </summary>
         [JsonProperty(Required = Required.Always)]
-        public float Scale { get; set; }
+        public double Scale { get; set; }
     }
 }

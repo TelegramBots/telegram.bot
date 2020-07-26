@@ -33,20 +33,20 @@ namespace Telegram.Bot.Converters
             }
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object ReadJson(
+            JsonReader reader,
+            Type objectType,
+            object existingValue,
+            JsonSerializer serializer)
         {
-            string value = JToken.ReadFrom(reader).Value<string>();
-            if (value == null)
-            {
+            var value = JToken.ReadFrom(reader).Value<string>();
+
+            if (value is null)
                 return new InputFileStream(Stream.Null);
-            }
-            else
-            {
-                if (Uri.TryCreate(value, UriKind.Absolute, out Uri _))
-                    return new InputOnlineFile(value);
-                else
-                    return new InputTelegramFile(value);
-            }
+            if (Uri.TryCreate(value, UriKind.Absolute, out _))
+                return new InputOnlineFile(value);
+
+            return new InputTelegramFile(value);
         }
     }
 }

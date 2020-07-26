@@ -24,20 +24,23 @@ namespace Telegram.Bot.Tests.Integ.Interactive
             _fixture = fixture;
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldReceiveAnswerCallbackQuery)]
+        [OrderedFact("Should receive and answer callback query result with a notification")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.SendMessage)]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.AnswerCallbackQuery)]
         public async Task Should_Answer_With_Notification()
         {
-            string callbackQueryData = 'a' + new Random().Next(5_000).ToString();
+            string callbackQueryData = $"a{new Random().Next(5_000).ToString()}";
 
             Message message = await BotClient.SendTextMessageAsync(
                 chatId: _fixture.SupergroupChat.Id,
                 text: "Please click on *OK* button.",
                 parseMode: ParseMode.Markdown,
-                replyMarkup: new InlineKeyboardMarkup(new[]
+                replyMarkup: new InlineKeyboardMarkup(new []
                 {
-                    InlineKeyboardButton.WithCallbackData("OK", callbackQueryData)
+                    InlineKeyboardButton.WithCallbackData(
+                        text: "OK",
+                        callbackData: callbackQueryData
+                    )
                 })
             );
 
@@ -45,7 +48,7 @@ namespace Telegram.Bot.Tests.Integ.Interactive
             CallbackQuery callbackQuery = responseUpdate.CallbackQuery;
 
             await BotClient.AnswerCallbackQueryAsync(
-                callbackQueryId: callbackQuery.Id,
+                callbackQueryId: callbackQuery!.Id,
                 text: "You clicked on OK"
             );
 
@@ -56,25 +59,30 @@ namespace Telegram.Bot.Tests.Integ.Interactive
             Assert.Null(callbackQuery.GameShortName);
             Assert.False(callbackQuery.IsGameQuery);
             Assert.False(callbackQuery.From.IsBot);
+            Assert.NotNull(callbackQuery.From.Username);
             Assert.NotEmpty(callbackQuery.From.Username);
             Assert.True(JToken.DeepEquals(
-                JToken.FromObject(message), JToken.FromObject(callbackQuery.Message)
+                JToken.FromObject(message),
+                JToken.FromObject(callbackQuery.Message)
             ));
         }
 
-        [OrderedFact(DisplayName = FactTitles.ShouldAnswerCallbackQueryWithAlert)]
+        [OrderedFact("Should receive and answer callback query result with an alert")]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.SendMessage)]
         [Trait(Constants.MethodTraitName, Constants.TelegramBotApiMethods.AnswerCallbackQuery)]
         public async Task Should_Answer_With_Alert()
         {
-            string callbackQueryData = 'b' + new Random().Next(5_000).ToString();
+            string callbackQueryData = $"b{new Random().Next(5_000)}";
 
             Message message = await BotClient.SendTextMessageAsync(
                 chatId: _fixture.SupergroupChat.Id,
                 text: "Please click on *Notify* button.",
                 parseMode: ParseMode.Markdown,
                 replyMarkup: new InlineKeyboardMarkup(
-                    InlineKeyboardButton.WithCallbackData("Notify", callbackQueryData)
+                    InlineKeyboardButton.WithCallbackData(
+                        text: "Notify",
+                        callbackData: callbackQueryData
+                    )
                 )
             );
 
@@ -82,31 +90,25 @@ namespace Telegram.Bot.Tests.Integ.Interactive
             CallbackQuery callbackQuery = responseUpdate.CallbackQuery;
 
             await BotClient.AnswerCallbackQueryAsync(
-                callbackQueryId: responseUpdate.CallbackQuery.Id,
+                callbackQueryId: responseUpdate.CallbackQuery!.Id,
                 text: "Got it!",
                 showAlert: true
             );
 
             Assert.Equal(UpdateType.CallbackQuery, responseUpdate.Type);
+            Assert.NotNull(callbackQuery);
             Assert.Equal(callbackQueryData, callbackQuery.Data);
             Assert.NotEmpty(callbackQuery.ChatInstance);
             Assert.Null(callbackQuery.InlineMessageId);
             Assert.Null(callbackQuery.GameShortName);
             Assert.False(callbackQuery.IsGameQuery);
             Assert.False(callbackQuery.From.IsBot);
+            Assert.NotNull(callbackQuery.From.Username);
             Assert.NotEmpty(callbackQuery.From.Username);
             Assert.True(JToken.DeepEquals(
-                JToken.FromObject(message), JToken.FromObject(callbackQuery.Message)
+                JToken.FromObject(message),
+                JToken.FromObject(callbackQuery.Message)
             ));
-        }
-
-        private static class FactTitles
-        {
-            public const string ShouldReceiveAnswerCallbackQuery =
-                "Should receive and answer callback query result with a notification";
-
-            public const string ShouldAnswerCallbackQueryWithAlert =
-                "Should receive and answer callback query result with an alert";
         }
     }
 }

@@ -7,11 +7,11 @@ using Telegram.Bot.Types;
 namespace Telegram.Bot.Requests
 {
     /// <summary>
-    /// Get data for high score tables. Will return the score of the specified user and several of his neighbors in a game. On success, returns an array of <see cref="GameHighScore"/>.
+    /// Get data for high score tables. Will return the score of the specified user and several of
+    /// his neighbors in a game. On success, returns an array of <see cref="GameHighScore"/>.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
-    public class GetInlineGameHighScoresRequest : RequestBase<GameHighScore[]>,
-                                                  IInlineMessage
+    public class GetInlineGameHighScoresRequest : RequestBase<GameHighScore[]>, IUserTargetable
     {
         /// <summary>
         /// User identifier
@@ -19,7 +19,9 @@ namespace Telegram.Bot.Requests
         [JsonProperty(Required = Required.Always)]
         public int UserId { get; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Identifier of the inline message
+        /// </summary>
         [JsonProperty(Required = Required.Always)]
         public string InlineMessageId { get; }
 

@@ -4,7 +4,8 @@ using Newtonsoft.Json.Serialization;
 namespace Telegram.Bot.Types.InlineQueryResults
 {
     /// <summary>
-    /// Represents the content of a contact message to be sent as the result of an <see cref="InlineQuery"/>.
+    /// Represents the content of a contact message to be sent as the result of an
+    /// <see cref="InlineQuery"/>.
     /// </summary>
     [JsonObject(MemberSerialization.OptIn, NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
     public class InputContactMessageContent : InputMessageContentBase
@@ -25,15 +26,17 @@ namespace Telegram.Bot.Types.InlineQueryResults
         /// Optional. Contact's last name
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string LastName { get; set; }
+        public string? LastName { get; set; }
 
         /// <summary>
         /// Optional. Additional data about the contact in the form of a vCard, 0-2048 bytes
         /// </summary>
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Vcard { get; set; }
+        public string? Vcard { get; set; }
 
+#pragma warning disable 8618
         private InputContactMessageContent()
+#pragma warning restore 8618
         { }
 
         /// <summary>
