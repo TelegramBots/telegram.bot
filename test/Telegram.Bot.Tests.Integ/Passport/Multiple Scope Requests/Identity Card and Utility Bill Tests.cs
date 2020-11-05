@@ -252,13 +252,14 @@ namespace Telegram.Bot.Tests.Integ.Passport
             EncryptedPassportElement idCardEl = Assert.Single(passportData!.Data, el => el.Type == "identity_card");
 
             Assert.NotNull(idCardEl!.FrontSide);
-            Assert.NotNull(idCardEl!.FrontSide.FileSize);
+            // might be null after all
+            //Assert.NotNull(idCardEl!.FrontSide.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials = decrypter.DecryptCredentials(passportData.Credentials, key);
 
             byte[] encryptedContent;
-            await using (System.IO.MemoryStream stream = new System.IO.MemoryStream(idCardEl.FrontSide.FileSize.Value))
+            await using (System.IO.MemoryStream stream = new System.IO.MemoryStream())
             {
                 await BotClient.GetInfoAndDownloadFileAsync(
                     idCardEl.FrontSide.FileId,
@@ -325,13 +326,14 @@ namespace Telegram.Bot.Tests.Integ.Passport
             EncryptedPassportElement idCardEl = Assert.Single(passportData!.Data, el => el.Type == "identity_card");
 
             Assert.NotNull(idCardEl!.Selfie);
-            Assert.NotNull(idCardEl!.Selfie.FileSize);
+            //might be null
+            //Assert.NotNull(idCardEl!.Selfie.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials = decrypter.DecryptCredentials(passportData.Credentials, key);
 
             byte[] encryptedContent;
-            await using (System.IO.MemoryStream stream = new System.IO.MemoryStream(idCardEl.Selfie.FileSize.Value))
+            await using (System.IO.MemoryStream stream = new System.IO.MemoryStream())
             {
                 await BotClient.GetInfoAndDownloadFileAsync(
                     idCardEl.Selfie.FileId,
@@ -359,7 +361,8 @@ namespace Telegram.Bot.Tests.Integ.Passport
             Assert.NotNull(billElement!.Files);
 
             PassportFile billScanFile = Assert.Single(billElement.Files);
-            Assert.NotNull(billScanFile!.FileSize);
+            //null
+            //Assert.NotNull(billScanFile!.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials = decrypter.DecryptCredentials(passportData.Credentials, key);
@@ -375,17 +378,19 @@ namespace Telegram.Bot.Tests.Integ.Passport
                     fileCredentials,
                     decryptedFile
                 );
+                Assert.NotEqual(0, decryptedFile.Length);
+                /*
                 Assert.InRange(
                     decryptedFile.Length,
                     billScanFile.FileSize.Value - 256,
                     billScanFile.FileSize.Value + 256
-                );
+                );*/
             }
 
             Assert.NotNull(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FileId);
-            Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedFileInfo.FileSize.Value, 1_000, 50_000_000);
         }
 
         [OrderedFact("Should decrypt the single translation file in 'utility_bill' element")]
@@ -399,7 +404,8 @@ namespace Telegram.Bot.Tests.Integ.Passport
             Assert.NotNull(billElement!.Translation);
 
             PassportFile translationFile = Assert.Single(billElement.Translation);
-            Assert.NotNull(translationFile!.FileSize);
+            //null
+            //Assert.NotNull(translationFile!.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials = decrypter.DecryptCredentials(passportData.Credentials, key);
@@ -414,17 +420,20 @@ namespace Telegram.Bot.Tests.Integ.Passport
                     fileCredentials!,
                     decryptedFile
                 );
-                Assert.InRange(
+
+                Assert.NotEqual(0, decryptedFile.Length);
+                // does not have filesize
+                /*Assert.InRange(
                     decryptedFile.Length,
                     translationFile.FileSize.Value - 256,
                     translationFile.FileSize.Value + 256
-                );
+                );*/
             }
 
             Assert.NotNull(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FileId);
-            Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedFileInfo.FileSize.Value, 1_000, 50_000_000);
         }
     }
 }

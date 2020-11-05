@@ -102,15 +102,19 @@ namespace IntegrationTests
 
             Assert.NotNull(encryptedElement.FrontSide);
             Assert.NotEmpty(encryptedElement.FrontSide.FileId);
-            Assert.InRange(encryptedElement.FrontSide.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedElement.FrontSide.FileSize.Value, 1_000, 50_000_000);
 
             Assert.NotNull(encryptedElement.ReverseSide);
             Assert.NotEmpty(encryptedElement.ReverseSide.FileId);
-            Assert.InRange(encryptedElement.ReverseSide.FileSize, 1_000, 50_000_000);
+            if (encryptedElement.ReverseSide.FileSize.HasValue)
+            {
+                Assert.InRange(encryptedElement.ReverseSide.FileSize.Value, 1_000, 50_000_000);
+            }
+
 
             Assert.NotNull(encryptedElement.Selfie);
             Assert.NotEmpty(encryptedElement.Selfie.FileId);
-            Assert.InRange(encryptedElement.Selfie.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedElement.Selfie.FileSize.Value, 1_000, 50_000_000);
 
             Assert.NotNull(encryptedElement.Translation);
             Assert.NotEmpty(encryptedElement.Translation);
@@ -121,7 +125,7 @@ namespace IntegrationTests
             );
             Assert.All(
                 encryptedElement.Translation,
-                translation => Assert.InRange(translation.FileSize, 1_000, 50_000_000)
+                translation => Assert.InRange(translation.FileSize.Value, 1_000, 50_000_000)
             );
 
             Assert.NotNull(passportData.Credentials);
@@ -227,7 +231,7 @@ namespace IntegrationTests
             Assert.NotNull(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FileId);
-            Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedFileInfo.FileSize.Value, 1_000, 50_000_000);
         }
 
         [OrderedFact("Should decrypt reverse side photo file of 'driver_license' element")]
@@ -238,7 +242,8 @@ namespace IntegrationTests
             RSA key = EncryptionKey.ReadAsRsa();
             EncryptedPassportElement element = passportData.Data.Single();
 
-            Assert.NotNull(element.ReverseSide.FileSize);
+            //Wrong assertion for some
+            //Assert.NotNull(element.ReverseSide.FileSize);
 
             IDecrypter decrypter = new Decrypter();
             Credentials credentials = decrypter.DecryptCredentials(passportData.Credentials, key);
@@ -246,7 +251,7 @@ namespace IntegrationTests
             File encryptedFileInfo;
             string decryptedFilePath = System.IO.Path.GetTempFileName();
             await using (System.IO.Stream
-                encryptedContent = new System.IO.MemoryStream(element.ReverseSide.FileSize.Value),
+                encryptedContent = new System.IO.MemoryStream(),
                 decryptedFile = System.IO.File.OpenWrite(decryptedFilePath)
             )
             {
@@ -268,7 +273,7 @@ namespace IntegrationTests
             Assert.NotNull(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FilePath);
             Assert.NotEmpty(encryptedFileInfo.FileId);
-            Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+            Assert.InRange(encryptedFileInfo.FileSize.Value, 1_000, 50_000_000);
         }
 
         [OrderedFact("Should decrypt selfie photo file of 'driver_license' element and send it to chat")]
@@ -289,7 +294,7 @@ namespace IntegrationTests
                 Assert.NotEmpty(encryptedFileInfo.FilePath);
                 Assert.NotEmpty(encryptedFileInfo.FileId);
                 Assert.NotNull(encryptedFileInfo.FileSize);
-                Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+                Assert.InRange(encryptedFileInfo.FileSize.Value, 1_000, 50_000_000);
 
                 await using System.IO.MemoryStream stream = new System.IO.MemoryStream(encryptedFileInfo.FileSize.Value);
                 await BotClient.DownloadFileAsync(encryptedFileInfo.FilePath, stream);
@@ -338,7 +343,7 @@ namespace IntegrationTests
                     Assert.NotEmpty(encryptedFileInfo.FilePath);
                     Assert.NotEmpty(encryptedFileInfo.FileId);
                     Assert.NotNull(encryptedFileInfo.FileSize);
-                    Assert.InRange(encryptedFileInfo.FileSize, 1_000, 50_000_000);
+                    Assert.InRange(encryptedFileInfo.FileSize.Value, 1_000, 50_000_000);
 
                     await using System.IO.MemoryStream stream = new System.IO.MemoryStream(
                         encryptedFileInfo.FileSize.Value
