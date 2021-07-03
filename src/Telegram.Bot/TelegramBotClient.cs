@@ -24,7 +24,7 @@ namespace Telegram.Bot
     /// <summary>
     /// A client to use the Telegram Bot API
     /// </summary>
-    public class TelegramBotClient : ITelegramBotClient
+    public class TelegramBotClient : ITelegramBotClient, IDisposable
     {
         private const string BaseTelegramUrl = "https://api.telegram.org";
         private static readonly Update[] EmptyUpdates = { };
@@ -174,6 +174,8 @@ namespace Telegram.Bot
 
         #endregion
 
+        #region Construction and disposal
+
         /// <summary>
         /// Create a new <see cref="TelegramBotClient"/> instance.
         /// </summary>
@@ -214,6 +216,7 @@ namespace Telegram.Bot
             _baseRequestUrl = $"{effectiveBaseUrl}/bot{token}";
             _baseFileUrl = $"{effectiveBaseUrl}/file/bot{token}";
             _httpClient = httpClient ?? new HttpClient();
+            _isCustomHttpClientUsed = httpClient != null;
         }
 
         /// <summary>
@@ -238,6 +241,36 @@ namespace Telegram.Bot
         public TelegramBotClient(string token, IWebProxy webProxy, string baseUrl = default)
             : this(token, CreateHttpClient(webProxy), baseUrl)
         { }
+
+        private bool _isDisposed;
+        private readonly bool _isCustomHttpClientUsed;
+
+        /// <summary>
+        /// Allows a <see cref="TelegramBotClient"/> to try to free resources and perform other cleanup operations before it is reclaimed by garbage collection.
+        /// </summary>
+        ~TelegramBotClient() => dispose();
+
+        /// <summary>
+        /// Disposes this <see cref="TelegramBotClient"/>
+        /// </summary>
+        public void Dispose()
+        {
+            dispose();
+            GC.SuppressFinalize(this);
+        }
+
+        private void dispose()
+        {
+            if (_isDisposed)
+                return;
+
+            if (!_isCustomHttpClientUsed)
+                _httpClient.Dispose();
+
+            _isDisposed = true;
+        }
+
+        #endregion
 
         #region Helpers
 
